@@ -1,7 +1,5 @@
 # User & Authentication API Documentation
 
-Below is a comprehensive overview of the user and authentication endpoints, along with request/response formats, authentication details, and possible error responses. Each endpoint’s usage is described in Markdown suitable for frontend integrations.
-
 ---
 
 ## Table of Contents
@@ -279,5 +277,3 @@ Below is a comprehensive overview of the user and authentication endpoints, alon
 | DELETE | `/auth/logout`                  | **Logout** – Invalidate refresh token cookie      |
 
 ---
-
-This documentation covers all the endpoints provided in the code, including their request and response formats, authentication requirements, and potential error responses. Feel free to adapt the request/response examples and field descriptions as needed in your frontend application.
