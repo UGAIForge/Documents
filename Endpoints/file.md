@@ -92,54 +92,154 @@
 - **Endpoint**: `PATCH /projects/{project_uuid}/versions/{version_number}/files/{file_uuid}/content/partial`
 - **Method**: `PATCH`
 - **Authentication**: **Bearer Token** (must include `Authorization: Bearer <access_token>`)
-- **Description**: Partially updates the file’s JSON content by specifying a path (array of keys or indices) and a new value for that path.  
-  For example, if the content is:
-  ```json
-  {
-    "workers": [
-      {
-        "name": "worker name",
-        "SPL": {
-          "workFlows": [
-            {
-              "flowContent": [
-                {
-                  "type": "command",
-                  "content": "original command"
-                }
-              ]
-            }
-          ]
-        }
+- **Description**: Partially updates the file’s JSON content by specifying a path (array of keys or indices) and a new value for that path.
+
+### Example: Update a Field in a Nested Object
+Suppose the original file content is:
+```json
+{
+  "workers": [
+    {
+      "name": "worker name",
+      "SPL": {
+        "workFlows": [
+          {
+            "flowContent": [
+              {
+                "type": "command",
+                "content": "original command"
+              }
+            ]
+          }
+        ]
       }
-    ]
-  }
-  ```
-  and you PATCH with:
-  ```json
-  {
-    "path": ["workers", 0, "SPL", "workFlows", 0, "flowContent", 0, "content"],
-    "value": "updated command"
-  }
-  ```
-  The `content` field of the first item in the first worker’s first workflow’s first `flowContent` element is updated to `"updated command"`.
-
-  - Use **string keys** to navigate dictionaries.
-  - Use **integer indices** to navigate lists.
-
-  ### How to Add an Item to a List
-  To add a new item to a list, provide the path using the **next available index**.  
-  For example, to append a new command to the `flowContent` array:
-  ```json
-  {
-    "path": ["workers", 0, "SPL", "workFlows", 0, "flowContent", 1],
-    "value": {
-      "type": "command",
-      "content": "new command"
     }
+  ]
+}
+```
+
+Then you PATCH with the request body:
+```json
+{
+  "path": ["workers", 0, "SPL", "workFlows", 0, "flowContent", 0, "content"],
+  "value": "updated command"
+}
+```
+
+The updated file content becomes:
+```json
+{
+  "workers": [
+    {
+      "name": "worker name",
+      "SPL": {
+        "workFlows": [
+          {
+            "flowContent": [
+              {
+                "type": "command",
+                "content": "updated command"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}
+```
+
+The response is:
+```json
+{
+  "path": ["workers", 0, "SPL", "workFlows", 0, "flowContent", 0, "content"],
+  "value": "updated command",
+  "updated_at": "2025-03-21T15:32:56.789Z"
+}
+```
+
+---
+
+### How to Add an Item to a List
+
+To **append a new item to an existing list**, provide a path where the last element is equal to the current list's length.
+
+#### Example: Append a new `command` to `flowContent`
+
+Original content:
+```json
+{
+  "workers": [
+    {
+      "SPL": {
+        "workFlows": [
+          {
+            "flowContent": [
+              {
+                "type": "command",
+                "content": "command A"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}
+```
+
+Request body:
+```json
+{
+  "path": ["workers", 0, "SPL", "workFlows", 0, "flowContent", 1],
+  "value": {
+    "type": "command",
+    "content": "command B"
   }
-  ```
-  This will insert a second item in the `flowContent` list.
+}
+```
+
+Updated content:
+```json
+{
+  "workers": [
+    {
+      "SPL": {
+        "workFlows": [
+          {
+            "flowContent": [
+              {
+                "type": "command",
+                "content": "command A"
+              },
+              {
+                "type": "command",
+                "content": "command B"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}
+```
+
+Response:
+```json
+{
+  "path": ["workers", 0, "SPL", "workFlows", 0, "flowContent", 1],
+  "value": {
+    "type": "command",
+    "content": "command B"
+  },
+  "updated_at": "2025-03-21T15:35:22.123Z"
+}
+```
+
+> ⚠️ When adding to a list, **you must provide the exact next index** — for example, use `2` if the list has two items. The system does not support automatic appending without the correct index.
+
+---
 
 - **URL Params**:
   - `project_uuid` (string): The UUID of the project.
@@ -153,10 +253,10 @@
     "value": "updated command"
   }
   ```
-  | Field     | Type            | Required | Description                                                                 |
-  |-----------|-----------------|----------|-----------------------------------------------------------------------------|
-  | `path`    | (string \| int)[] | Required | A list of keys (for dicts) and/or indexes (for lists) defining the JSON path to update. |
-  | `value`   | any (JSON data) | Required | The new value to set at the specified path.                                 |
+  | Field     | Type              | Required | Description                                                                 |
+  |-----------|-------------------|----------|-----------------------------------------------------------------------------|
+  | `path`    | (string \| int)[] | Required | A list of keys (for dicts) and/or indices (for lists) defining the JSON path to update. |
+  | `value`   | any (JSON data)   | Required | The new value to set at the specified path.                                 |
 
 - **Response**: `200 OK`  
   Returns a **FileContentPartialResponse** object:
@@ -171,7 +271,7 @@
 - **Errors**:
   - `401 Unauthorized`: Missing or invalid bearer token.
   - `404 Not Found`: Project, version, user, or file not found.
-  - `400 Bad Request`: Could not update the content (e.g., the path is invalid or the type does not match).
+  - `400 Bad Request`: Could not update the content (e.g., the path is invalid, list index is out of bounds, or type mismatch).
   - `500 Internal Server Error`: Database or other internal error.
 
 ---
