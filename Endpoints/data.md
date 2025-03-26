@@ -1,14 +1,13 @@
 # Data Endpoints API Documentation
 
----
-
 ## Table of Contents
 1. [Create Data Entry](#create-data-entry)
-2. [Get Data by Scope](#get-data-by-scope)
+2. [Get Data by File](#get-data-by-file)
 3. [Get Data by UUID](#get-data-by-uuid)
-4. [Update Data](#update-data)
-5. [Delete Data](#delete-data)
-6. [Summary of Data Endpoints](#summary-of-data-endpoints)
+4. [Get Data at Project Version](#get-data-at-project-version)
+5. [Update Data](#update-data)
+6. [Delete Data](#delete-data)
+7. [Summary of Data Endpoints](#summary-of-data-endpoints)
 
 ---
 
@@ -16,7 +15,7 @@
 
 - **Endpoint**: `POST /data`
 - **Method**: `POST`
-- **Authentication**: Depends on your system’s needs (not shown here).  
+- **Authentication**: Depends on your system’s needs (not shown here).
 - **Description**: Creates a new data entry, associated with a specific file.
 
 - **Request Body** (JSON):
@@ -68,19 +67,15 @@
 
 ---
 
-## Get Data by Scope
+## Get Data by File
+
 - **Endpoint**: `GET /data`
 - **Method**: `GET`
 - **Authentication**: Depends on your system’s needs (not shown here).
-- **Description**: Retrieves a list of data entries either by `file_uuid` **or** by `(project_uuid + version_number)`. Exactly one of these approaches should be used per request.
+- **Description**: Retrieves a list of data entries for a single `file_uuid`.  
 
 - **Query Parameters**:
-  - **`file_uuid`** (string, optional): If provided, returns data entries associated with this file.
-  - **`project_uuid`** (string, optional) & **`version_number`** (integer, optional): If provided together, returns data entries belonging to the specified project version.
-  
-  > **Important**:  
-  > - You **cannot** specify both `file_uuid` **and** `(project_uuid + version_number)`.
-  > - If `project_uuid` is supplied, `version_number` must be supplied as well (and vice versa).
+  - **`file_uuid`** (string, required): The UUID of the file for which to retrieve data entries.
 
 - **Response**: `200 OK`  
   Returns a **DataListResponse** object, containing a list of data UUIDs and names:
@@ -99,12 +94,12 @@
   }
   ```
 - **Errors**:
-  - `400 Bad Request`: If query parameters are invalid (e.g., both `file_uuid` and `project_uuid` are specified, or only one of `project_uuid`/`version_number` is given).
   - `500 Internal Server Error`: Database or other internal error.
 
 ---
 
 ## Get Data by UUID
+
 - **Endpoint**: `GET /data/{data_uuid}`
 - **Method**: `GET`
 - **Authentication**: Depends on your system’s needs (not shown here).
@@ -138,7 +133,111 @@
 
 ---
 
+## Get Data at Project Version
+
+- **Endpoint**: `GET /data/at`
+- **Method**: `GET**
+- **Authentication**: Depends on your system’s needs (not shown here).
+- **Description**: Retrieves various **Data**, **Context**, or **Worker** items within a specific project version.  
+  - **Data** items have a valid `uuid` and `type` of `"Data"`, with no `path`.  
+  - **Context** or **Worker** items have no `uuid` (null), but a `path` array describing their location.
+
+- **Query Parameters**:
+  - `project_uuid` (string, required): The UUID of the project.
+  - `version_number` (integer, required): The version number of the project.
+
+- **Response**: `200 OK`  
+  Returns a **DataAtResponse** object, containing a list of items with varying fields depending on their `type`:
+
+  ```json
+  {
+    "items": [
+      {
+        "display_name": "Test Data 2",
+        "type": "Data",
+        "uuid": "data_IPRAYThdTXyL2Pv1yoxfXw",
+        "path": null
+      },
+      {
+        "display_name": "Test Agent.persona.personality",
+        "type": "Context",
+        "uuid": null,
+        "path": [
+          "Test Agent",
+          "context",
+          0,
+          "content",
+          0,
+          "key"
+        ]
+      },
+      {
+        "display_name": "Test Agent.persona.background",
+        "type": "Context",
+        "uuid": null,
+        "path": [
+          "Test Agent",
+          "context",
+          0,
+          "content",
+          1,
+          "key"
+        ]
+      },
+      {
+        "display_name": "Test Agent.audience.target_users",
+        "type": "Context",
+        "uuid": null,
+        "path": [
+          "Test Agent",
+          "context",
+          1,
+          "content",
+          0,
+          "key"
+        ]
+      },
+      {
+        "display_name": "Test Agent.code_helper",
+        "type": "Worker",
+        "uuid": null,
+        "path": [
+          "Test Agent",
+          "workers",
+          0
+        ]
+      },
+      {
+        "display_name": "Test Agent.test_writer",
+        "type": "Worker",
+        "uuid": null,
+        "path": [
+          "Test Agent",
+          "workers",
+          1
+        ]
+      }
+    ]
+  }
+  ```
+
+  | Field               | Type             | Description                                                                          |
+  |---------------------|-----------------|--------------------------------------------------------------------------------------|
+  | `display_name`      | string          | A descriptive name to show in the UI.                                               |
+  | `type`             | "Data"\|"Context"\|"Worker" | Type of the item. "Data" items have UUID, "Context"/"Worker" items have path only. |
+  | `uuid`             | string \| null   | UUID for "Data" items only. null for "Context" or "Worker".                         |
+  | `path`             | array \| null    | Path array for "Context" or "Worker" items. null for "Data" items.                  |
+
+- **Errors**:
+  - `403 Forbidden`: Attempting to view items in a private project without access.
+  - `404 Not Found`: Project not found.
+  - `400 Bad Request`: Other validation issues.
+  - `500 Internal Server Error`: Database or other internal error.
+
+---
+
 ## Update Data
+
 - **Endpoint**: `PATCH /data/{data_uuid}`
 - **Method**: `PATCH`
 - **Authentication**: Depends on your system’s needs (not shown here).
@@ -194,6 +293,7 @@
 ---
 
 ## Delete Data
+
 - **Endpoint**: `DELETE /data/{data_uuid}`
 - **Method**: `DELETE`
 - **Authentication**: Depends on your system’s needs (not shown here).
@@ -213,10 +313,11 @@
 
 ## Summary of Data Endpoints
 
-| Method | Endpoint         | Description                                      |
-|-------:|------------------|--------------------------------------------------|
-| **POST**   | `/data`            | **Create Data Entry** – attach data to a file         |
-| **GET**    | `/data`            | **Get Data by Scope** – filter by file or project version |
-| **GET**    | `/data/{data_uuid}`| **Get Data by UUID** – fetch a single data record     |
-| **PATCH**  | `/data/{data_uuid}`| **Update Data** – partially modify a data entry       |
-| **DELETE** | `/data/{data_uuid}`| **Delete Data** – remove a data entry from the system |
+| Method | Endpoint             | Description                                                      |
+|-------:|----------------------|------------------------------------------------------------------|
+| **POST**   | `/data`                  | **Create Data Entry** – attach data to a file                      |
+| **GET**    | `/data?file_uuid=...`    | **Get Data by File** – list data for a specific file               |
+| **GET**    | `/data/{data_uuid}`      | **Get Data by UUID** – fetch a single data record                  |
+| **GET**    | `/data/at`              | **Get Data at Project Version** – retrieve Data/Context/Worker items|
+| **PATCH**  | `/data/{data_uuid}`      | **Update Data** – partially modify a data entry                    |
+| **DELETE** | `/data/{data_uuid}`      | **Delete Data** – remove a data entry                              |
