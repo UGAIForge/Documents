@@ -17,7 +17,7 @@
 
 - **Endpoint**: `POST /data`
 - **Method**: `POST`
-- **Authentication**: Depends on your system’s needs (not shown here).
+- **Authentication**: **Bearer Token** (must include `Authorization: Bearer <access_token>`)
 - **Description**: Creates a new data entry, associated with a specific file.
 
 - **Request Body** (JSON):
@@ -73,7 +73,7 @@
 
 - **Endpoint**: `GET /data`
 - **Method**: `GET`
-- **Authentication**: Depends on your system’s needs (not shown here).
+- **Authentication**: **Bearer Token** (must include `Authorization: Bearer <access_token>`)
 - **Description**: Retrieves a list of data entries for a single `file_uuid`.  
 
 - **Query Parameters**:
@@ -139,7 +139,7 @@
 
 - **Endpoint**: `GET /data/at`
 - **Method**: `GET**
-- **Authentication**: Depends on your system’s needs (not shown here).
+- **Authentication**: **Bearer Token** (must include `Authorization: Bearer <access_token>`)
 - **Description**: Retrieves various **Data**, **Context**, or **Worker** items within a specific project version.  
   - **Data** items have a valid `uuid` and `type` of `"Data"`, with no `path`.  
   - **Context** or **Worker** items have no `uuid` (null), but a `path` array describing their location.
@@ -242,7 +242,7 @@
 
 - **Endpoint**: `PATCH /data/{data_uuid}`
 - **Method**: `PATCH`
-- **Authentication**: Depends on your system’s needs (not shown here).
+- **Authentication**: **Bearer Token** (must include `Authorization: Bearer <access_token>`)
 - **Description**: Partially updates an existing data entry. Only the fields provided in the request body will be changed.
 
 - **URL Params**:
@@ -298,7 +298,7 @@
 
 - **Endpoint**: `DELETE /data/{data_uuid}`
 - **Method**: `DELETE`
-- **Authentication**: Depends on your system’s needs (not shown here).
+- **Authentication**: **Bearer Token** (must include `Authorization: Bearer <access_token>`)
 - **Description**: Deletes an existing data entry from the system.
 
 - **URL Params**:
@@ -318,8 +318,8 @@
 | Method | Endpoint             | Description                                                      |
 |-------:|----------------------|------------------------------------------------------------------|
 | **POST**   | `/data`                  | **Create Data Entry** – attach data to a file                      |
-| **GET**    | `/data?file_uuid=...`    | **Get Data by File** – list data for a specific file               |
+| **GET**    | `/data`                  | **Get Data by File** – list data for a specific file               |
 | **GET**    | `/data/{data_uuid}`      | **Get Data by UUID** – fetch a single data record                  |
-| **GET**    | `/data/at`              | **Get Data at Project Version** – retrieve Data/Context/Worker items|
+| **GET**    | `/data/at`               | **Get Data at Project Version** – retrieve Data/Context/Worker items|
 | **PATCH**  | `/data/{data_uuid}`      | **Update Data** – partially modify a data entry                    |
 | **DELETE** | `/data/{data_uuid}`      | **Delete Data** – remove a data entry                              |
