@@ -1,5 +1,7 @@
 # Data Endpoints API Documentation
 
+---
+
 ## Table of Contents
 1. [Create Data Entry](#create-data-entry)
 2. [Get Data by File](#get-data-by-file)
