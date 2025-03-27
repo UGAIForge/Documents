@@ -25,9 +25,9 @@
     "version_number": 1,
     "tag": "Initial version",
     "updated_at": "2023-10-05T12:34:56.789Z",
-    "project_uuid": "abcdef1234567890abcdef1234567890",
-    "project_name": "My Project",
-    "project_visibility": "private",
+    "uuid": "abcdef1234567890abcdef1234567890",
+    "name": "My Project",
+    "visibility": "private",
     "files": [
       {
         "uuid": "1234567890abcdef1234567890abcdef",
