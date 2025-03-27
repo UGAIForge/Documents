@@ -22,7 +22,6 @@
   ```json
   {
     "tag": "My Tag",
-    "url": "https://example.com/deploy",
     "settings": {
       "env": "production",
       "replicas": 3
@@ -32,7 +31,6 @@
   | Field         | Type                 | Required | Description                                                 |
   |---------------|----------------------|----------|-------------------------------------------------------------|
   | `tag`         | string (optional)   | No       | A descriptive tag for the new version.                      |
-  | `url`         | string (optional)   | No       | A URL or endpoint related to this deployment version.       |
   | `settings`    | object (JSON)       | No       | Arbitrary JSON settings, e.g., environment config.          |
 
 - **Response**: `201 Created`  
