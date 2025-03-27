@@ -135,7 +135,7 @@
 
 ---
 
-## Get Data at Project Version
+## Get Data at
 
 - **Endpoint**: `GET /data/at`
 - **Method**: `GET**
