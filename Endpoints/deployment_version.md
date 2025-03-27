@@ -103,7 +103,6 @@
   ```json
   {
     "tag": "New Tag",
-    "url": "https://new.example.com",
     "settings": {
       "replicas": 5
     }
@@ -112,7 +111,6 @@
   | Field         | Type                 | Required | Description                                     |
   |---------------|----------------------|----------|-------------------------------------------------|
   | `tag`         | string (optional)   | No       | Updated tag for this version.                   |
-  | `url`         | string (optional)   | No       | New URL or endpoint for the deployment version. |
   | `settings`    | object (JSON)       | No       | Updated JSON settings.                          |
 
 - **Response**: `200 OK`  
