@@ -31,7 +31,7 @@
   | Field   | Type   | Required | Description                                                |
   |---------|--------|----------|------------------------------------------------------------|
   | `name`  | string | Required  | A short, descriptive name for the deployment.             |
-  | `visibility`  | "private"\|"public" | Required | Defaults to `private` if not provided.  |
+  | `visibility`  | "private"\|"public" | Optional | Defaults to `private` if not provided.  |
 
 
 - **Response**: `201 Created`  
