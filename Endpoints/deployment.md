@@ -31,7 +31,7 @@
   | Field   | Type   | Required | Description                                                |
   |---------|--------|----------|------------------------------------------------------------|
   | `name`  | string | Required  | A short, descriptive name for the deployment.             |
-  | `visibility`  | "private"\|"public" | Required | Defaults to `private` if not provided.                       |
+  | `visibility`  | "private"\|"public" | Required | Defaults to `private` if not provided.  |
 
 
 - **Response**: `201 Created`  
@@ -161,7 +161,9 @@
   ```
   | Field   | Type   | Required | Description            |
   |---------|--------|----------|------------------------|
-  | `name`  | string | No       | New deployment name.   |
+  | `name`  | string | Optional         | New deployment name.   |
+  | `visibility`  | "private"\|"public" | Optional | Change visibility of the deployment.           |
+
 
 - **Response**: `200 OK`  
   Returns a **DeploymentResponse** object:
