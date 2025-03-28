@@ -84,6 +84,7 @@
         "uuid": "abcdef1234567890abcdef1234567890",
         "name": "MyDeployment",
         "user_uuid": "userabcdef1234567890abcdef1234",
+        "visibility": "private",
         "created_at": "2023-10-05T12:34:56.789Z",
         "updated_at": "2023-10-05T12:34:56.789Z"
       },
@@ -119,6 +120,7 @@
     "uuid": "abcdef1234567890abcdef1234567890",
     "name": "MyDeployment",
     "user_uuid": "userabcdef1234567890abcdef1234",
+    "visibility": "private",
     "created_at": "2023-10-05T12:34:56.789Z",
     "updated_at": "2023-10-05T12:34:56.789Z",
     "versions": [
@@ -166,8 +168,7 @@
   {
     "uuid": "abcdef1234567890abcdef1234567890",
     "name": "NewDeploymentName",
-    "user_uuid": "userabcdef1234567890abcdef1234",
-    "created_at": "2023-10-05T12:34:56.789Z",
+    "visibility": "private",
     "updated_at": "2023-10-06T08:22:33.123Z"
   }
   ```
