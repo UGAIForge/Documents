@@ -24,7 +24,8 @@
 - **Request Body** (JSON):
   ```json
   {
-    "name": "MyDeployment"
+    "name": "MyDeployment",
+    "visibility": "private"
   }
   ```
   | Field   | Type   | Required | Description                                                |
