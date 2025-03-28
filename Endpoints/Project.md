@@ -26,7 +26,7 @@
   | Field         | Type          | Required | Description                                                  |
   |---------------|---------------|----------|--------------------------------------------------------------|
   | `name`        | string        | Required | Project name.                                                |
-  | `visibility`  | "private"\|"public" | Optional | Defaults to `private` if not provided.                       |
+  | `visibility`  | "private"\|"public" | Required | Defaults to `private` if not provided.                       |
 
 - **Response**: `201 Created`  
   Returns a **ProjectWithVersionResponse** object, including the initial version and members:
