@@ -155,7 +155,8 @@
 - **Request Body** (JSON):
   ```json
   {
-    "name": "NewDeploymentName"
+    "name": "NewDeploymentName",
+    "visibility": "private"
   }
   ```
   | Field   | Type   | Required | Description            |
