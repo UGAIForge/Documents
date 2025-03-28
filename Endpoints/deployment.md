@@ -31,6 +31,8 @@
   | Field   | Type   | Required | Description                                                |
   |---------|--------|----------|------------------------------------------------------------|
   | `name`  | string | **Yes**  | A short, descriptive name for the deployment.             |
+  | `visibility`  | "private"\|"public" | Optional | Defaults to `private` if not provided.                       |
+
 
 - **Response**: `201 Created`  
   Returns a **DeploymentWithVersionsResponse** object, including the initial version:
@@ -39,6 +41,7 @@
     "uuid": "abcdef1234567890abcdef1234567890",
     "name": "MyDeployment",
     "user_uuid": "userabcdef1234567890abcdef1234",
+    "visibility": "private",
     "created_at": "2023-10-05T12:34:56.789Z",
     "updated_at": "2023-10-05T12:34:56.789Z",
     "versions": [
