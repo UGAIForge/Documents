@@ -237,7 +237,7 @@ Response:
 }
 ```
 
-> ⚠️ When adding to a list, **you must provide the exact next index** — for example, use `2` if the list already has two items. The system does not support automatic appending without the correct index.
+> ⚠️ **Important**: When adding to a list, **you must provide the exact next index** — for example, use `2` if the list already has two items. The system does not support automatic appending without the correct index.
 
 ---
 
@@ -295,8 +295,160 @@ Response:
 }
 ```
 
-> ⚠️ If the final key already exists, the value will be overwritten. If the key does not exist, it is created.
+> ⚠️ **Important**: If the final key already exists, the value will be overwritten. If the key does not exist, it is created.
 
+### How to Remove an Item in a List
+
+Currently, there is **no direct "remove index" operation**. Instead, you **overwrite** the parent array with a new array that excludes the item you want removed.
+
+#### Example: Remove the second `command` from `flowContent`
+
+Suppose the original file content is:
+```json
+{
+  "workers": [
+    {
+      "SPL": {
+        "workFlows": [
+          {
+            "flowContent": [
+              {
+                "type": "command",
+                "content": "command A"
+              },
+              {
+                "type": "command",
+                "content": "command B"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}
+```
+
+You want to remove the item at index `1` (which has `"content": "command B"`). First, **fetch** the list from your application side, remove the undesired item, and then **send the updated list** as the new `value`.
+
+Request body:
+```json
+{
+  "path": ["workers", 0, "SPL", "workFlows", 0, "flowContent"],
+  "value": [
+    {
+      "type": "command",
+      "content": "command A"
+    }
+  ]
+}
+```
+- Here, `path` points to the **array** itself (not an individual element).
+- `value` is the **entire array** after removing `"command B"`.
+
+The updated content becomes:
+```json
+{
+  "workers": [
+    {
+      "SPL": {
+        "workFlows": [
+          {
+            "flowContent": [
+              {
+                "type": "command",
+                "content": "command A"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}
+```
+
+Response:
+```json
+{
+  "path": ["workers", 0, "SPL", "workFlows", 0, "flowContent"],
+  "value": [
+    {
+      "type": "command",
+      "content": "command A"
+    }
+  ],
+  "updated_at": "2025-03-21T16:15:42.789Z"
+}
+```
+
+> ⚠️ **Important**: The final element in `path` must be the array you’re replacing, and `value` must be the complete updated array. Any item not present in `value` is effectively removed.
+
+---
+
+### How to Remove a Key from a Dictionary
+
+Similarly, to remove a key from a dictionary, **overwrite** the parent dictionary with a new dictionary that omits the unwanted key.
+
+#### Example: Remove `"replicas"` from `settings`
+
+Suppose the original file content is:
+```json
+{
+  "workers": [
+    {
+      "SPL": {
+        "settings": {
+          "env": "development",
+          "replicas": 2
+        }
+      }
+    }
+  ]
+}
+```
+
+To remove `"replicas"`, you fetch the existing `settings` object, delete `"replicas"`, and then overwrite the `settings` key with the updated object.
+
+Request body:
+```json
+{
+  "path": ["workers", 0, "SPL", "settings"],
+  "value": {
+    "env": "development"
+  }
+}
+```
+- Here, `path` points to the **dictionary** object you are replacing.
+- `value` is the **entire dictionary** minus the `"replicas"` key.
+
+Updated content:
+```json
+{
+  "workers": [
+    {
+      "SPL": {
+        "settings": {
+          "env": "development"
+        }
+      }
+    }
+  ]
+}
+```
+
+Response:
+```json
+{
+  "path": ["workers", 0, "SPL", "settings"],
+  "value": {
+    "env": "development"
+  },
+  "updated_at": "2025-03-21T16:17:09.123Z"
+}
+```
+
+> ⚠️ **Important**: The final element in `path` is the **dictionary** you’re overwriting, and `value` must contain the remaining keys. Any omitted key is removed.
 ---
 
 - **URL Params**:
