@@ -237,7 +237,65 @@ Response:
 }
 ```
 
-> ⚠️ When adding to a list, **you must provide the exact next index** — for example, use `2` if the list has two items. The system does not support automatic appending without the correct index.
+> ⚠️ When adding to a list, **you must provide the exact next index** — for example, use `2` if the list already has two items. The system does not support automatic appending without the correct index.
+
+---
+
+### How to Add an Item to a Dictionary
+
+To **add a new key-value pair** to an existing dictionary (object), specify the path to the dictionary and the new key as the final element. If the key does not yet exist, it will be created.
+
+#### Example: Add a new config key to `settings`
+
+Suppose the original file content is:
+```json
+{
+  "workers": [
+    {
+      "SPL": {
+        "settings": {
+          "env": "development"
+        }
+      }
+    }
+  ]
+}
+```
+
+Request body:
+```json
+{
+  "path": ["workers", 0, "SPL", "settings", "replicas"],
+  "value": 2
+}
+```
+
+Updated content:
+```json
+{
+  "workers": [
+    {
+      "SPL": {
+        "settings": {
+          "env": "development",
+          "replicas": 2
+        }
+      }
+    }
+  ]
+}
+```
+
+Response:
+```json
+{
+  "path": ["workers", 0, "SPL", "settings", "replicas"],
+  "value": 2,
+  "updated_at": "2025-03-21T16:00:10.456Z"
+}
+```
+
+> ⚠️ If the final key already exists, the value will be overwritten. If the key does not exist, it is created.
 
 ---
 
