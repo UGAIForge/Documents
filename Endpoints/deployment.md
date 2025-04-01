@@ -50,6 +50,7 @@
         "tag": "Initial version",
         "url": null,
         "settings": null,
+        "status": "deploying",
         "created_at": "2023-10-05T12:34:56.789Z",
         "updated_at": "2023-10-05T12:34:56.789Z"
       }
@@ -129,6 +130,7 @@
         "tag": "Initial version",
         "url": null,
         "settings": null,
+        "status": "deploying",
         "created_at": "2023-10-05T12:34:56.789Z",
         "updated_at": "2023-10-05T12:34:56.789Z"
       },
