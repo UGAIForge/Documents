@@ -79,7 +79,7 @@
       "env": "production",
       "replicas": 3
     },
-    "status": "deploying",
+    "status": "deploying|successful|failed",
     "created_at": "2023-10-05T12:34:56.789Z",
     "updated_at": "2023-10-06T07:21:33.789Z"
   }
