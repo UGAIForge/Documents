@@ -230,6 +230,12 @@
   | `uuid`             | string \| null   | UUID for "Data" items only. null for "Context" or "Worker".                         |
   | `path`             | array \| null    | Path array for "Context" or "Worker" items. null for "Data" items.                  |
 
+- **Errors**:
+  - `403 Forbidden`: Attempting to view items in a private project without access.
+  - `404 Not Found`: Project not found.
+  - `400 Bad Request`: Other validation issues.
+  - `500 Internal Server Error`: Database or other internal error.
+
 ### 💡 Inserting `{{ref:...}}` References (Frontend Integration)
 
 When the user types `@`, the frontend should:
@@ -266,12 +272,7 @@ When the user types `@`, the frontend should:
   ```text
   {{ref:worker:path_file_xxx_workers_0}}
   ```
-- **Errors**:
-  - `403 Forbidden`: Attempting to view items in a private project without access.
-  - `404 Not Found`: Project not found.
-  - `400 Bad Request`: Other validation issues.
-  - `500 Internal Server Error`: Database or other internal error.
-
+  
 ---
 
 ### 🛠 Frontend Responsibilities
