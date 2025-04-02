@@ -165,7 +165,7 @@
         "type": "Context",
         "uuid": null,
         "path": [
-          "Test Agent",
+          "file_IPRAYThdTXyL2Pv1yoxfXw",
           "context",
           0,
           "content",
@@ -178,7 +178,7 @@
         "type": "Context",
         "uuid": null,
         "path": [
-          "Test Agent",
+          "file_IPRAYThdTXyL2Pv1yoxfXw",
           "context",
           0,
           "content",
@@ -191,7 +191,7 @@
         "type": "Context",
         "uuid": null,
         "path": [
-          "Test Agent",
+          "file_IPRAYThdTXyL2Pv1yoxfXw",
           "context",
           1,
           "content",
@@ -204,7 +204,7 @@
         "type": "Worker",
         "uuid": null,
         "path": [
-          "Test Agent",
+          "file_IPRAYThdTXyL2Pv1yoxfXw",
           "workers",
           0
         ]
@@ -214,7 +214,7 @@
         "type": "Worker",
         "uuid": null,
         "path": [
-          "Test Agent",
+          "file_IPRAYThdTXyL2Pv1yoxfXw",
           "workers",
           1
         ]
@@ -230,11 +230,67 @@
   | `uuid`             | string \| null   | UUID for "Data" items only. null for "Context" or "Worker".                         |
   | `path`             | array \| null    | Path array for "Context" or "Worker" items. null for "Data" items.                  |
 
+### 💡 Inserting `{{ref:...}}` References (Frontend Integration)
+
+When the user types `@`, the frontend should:
+
+1. Fetch and display the list of referenceable items using this API.
+2. On selection, insert a `{{ref:...}}` placeholder at the cursor position in any freeform text field.
+3. Format the reference string using the rules below.
+
+#### Reference Format
+
+```text
+{{ref:<type>:<ref_id>}}
+```
+
+| Component    | Description                                                                      |
+|--------------|----------------------------------------------------------------------------------|
+| `<type>`     | One of: `data`, `context`, `worker`                                              |
+| `<ref_id>`   | For `data`: the UUID (e.g. `data_IPRAYThdTXyL2Pv1yoxfXw`)                         |
+|              | For `context` or `worker`: a flattened `path` string joined by `_` and prefixed with `path_` |
+
+#### Examples
+
+- **Data**
+  ```text
+  {{ref:data:data_IPRAYThdTXyL2Pv1yoxfXw}}
+  ```
+
+- **Context**
+  ```text
+  {{ref:context:path_file_xxx_context_0_content_0_key}}
+  ```
+
+- **Worker**
+  ```text
+  {{ref:worker:path_file_xxx_workers_0}}
+  ```
 - **Errors**:
   - `403 Forbidden`: Attempting to view items in a private project without access.
   - `404 Not Found`: Project not found.
   - `400 Bad Request`: Other validation issues.
   - `500 Internal Server Error`: Database or other internal error.
+
+---
+
+### 🛠 Frontend Responsibilities
+
+- **Flatten path arrays** into `path_` strings using `_` as the delimiter.
+- Insert the reference string in `{{ref:...}}` format into the user’s input.
+- Display `display_name` in the dropdown for a better user experience.
+
+#### Flattening Example
+
+Given path:
+```json
+["file_xxx", "context", 0, "content", 0, "key"]
+```
+
+Produces:
+```text
+path_file_xxx_context_0_content_0_key
+```
 
 ---
 
