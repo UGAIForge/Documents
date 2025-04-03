@@ -71,7 +71,10 @@
   {
     "file_uuid": "abcdef1234567890abcdef1234567890",
     "content": {
-      "someKey": "someValue"
+      "agentName": file.name,
+      "description": "",
+      "context": {},
+      "workers": {}
     },
     "created_at": "2023-10-05T12:34:56.789Z",
     "updated_at": "2023-10-05T12:34:56.789Z"
