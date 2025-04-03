@@ -8,51 +8,69 @@
 {
   "agentName": "Agent name",
   "description": "Agent description",
-  "context": [
-    {
+  "context": {
+    "context_xxx": {
       "type": "persona",
-      "content": [
-        { "key": "key1", "value": "value1" }
-      ]
+      "content": {
+        "persona_xxx": {
+          "key": "key1",
+          "value": "value1"
+        },
+        "persona_xxx": {
+          "key": "key2",
+          "value": "value2"
+        }
+      }
     },
-    {
+    "context_xxx": {
       "type": "audience",
-      "content": [
-        { "key": "key2", "value": "value2" }
-      ]
+      "content": {
+        "audience_xxx": {
+          "key": "key1",
+          "value": "value1"
+        },
+      }
     }
-  ],
-  "workers": [
-    {
+  },
+  "workers": {
+    "workder_xxx": {
       "name": "worker name",
       "description": "worker description",
       "entry": false,
-      "SPL": {
-        "workFlows": [
+      "SPL":{
+        "input": "this is input",
+        "output": "output to this value {{ref:}}",
+        "workFlows":[
           {
             "type": "mainFlow",
             "description": "main flow description",
             "condition": {
               "description": "condition description",
-              "value": "{{data_uuid}} == 222"
+              "value": "{{ref:}} == 222"
             },
             "flowContent": [
               {
                 "type": "command",
-                "content": "command content, {{data_source_uuid}}"
+                "content": "command content, {{ref:}}"
               },
               {
                 "type": "ifElse",
                 "content": {
                   "condition": {
                     "description": "condition description",
-                    "value": "{{value 1}} == 222"
+                    "value": "{{ref:}} == 222"
                   },
                   "trueFlow": [
-                    { "type": "command", "content": "command content, {{data_source_uuid}}" }
+                    {
+                      "type": "command",
+                      "content": "command content, {{ref:}}"
+                    }
                   ],
                   "falseFlow": [
-                    { "type": "command", "content": "command content, {{path}}" }
+                    {
+                      "type": "command",
+                      "content": "command content, {{path}}"
+                    }
                   ]
                 }
               },
@@ -64,7 +82,10 @@
                     "value": "{{value 1}} == 222"
                   },
                   "trueFlow": [
-                    { "type": "command", "content": "command content, {{data_source_uuid}}" }
+                    {
+                      "type": "command",
+                      "content": "command content, {{data_source_uuid}}"
+                    }
                   ],
                   "falseFlow": []
                 }
@@ -99,6 +120,6 @@
         }
       ]
     }
-  ]
+  }
 }
 ```
