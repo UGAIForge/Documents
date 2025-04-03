@@ -26,8 +26,8 @@
 ### Request Body (JSON)
 ```json
 {
-  "path": ["string", ...],
-  "type": "persona" | "audience" | "constraints" | "concept" | "worker"
+  "path": ["string", "..."],
+  "type": "persona | audience | constraints | concept | worker"
 }
 ```
 | Field   | Type                    | Required | Description                                                                      |
@@ -38,7 +38,7 @@
 ### Response
 ```json
 {
-  "path": ["string", ...],
+  "path": ["string", "..."],
   "value": {}
 }
 ```
