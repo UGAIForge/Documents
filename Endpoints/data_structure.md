@@ -33,7 +33,7 @@
     }
   },
   "workers": {
-    "workder_xxx": {
+    "worker_xxx": {
       "name": "worker name",
       "description": "worker description",
       "entry": false,
