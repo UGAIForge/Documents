@@ -3,16 +3,13 @@
 ---
 
 ## Table of Contents
-1. [Create Item (`/edit/item`)](#create-item-edititem)
-   - [Add a Context](#add-a-context)
-   - [Add Content to a Context](#add-content-to-a-context)
-   - [Add a Worker](#add-a-worker)
-2. [Get Edit List (`/edit/at`)](#get-edit-list-editat)
+1. [Create Item](#create-item)
+2. [Get Edit List](#get-edit-list)
+3. [Summary of Edit Endpoints](#summary-of-edit-endpoints)
 
 ---
 
-## Create Item (`/edit/item`)
-
+## Create Item
 - **Endpoint**: `POST /edit/item`
 - **Method**: `POST`
 - **Authentication**: **Bearer Token** (must include `Authorization: Bearer <access_token>`)
@@ -23,20 +20,20 @@
   The UUID of the file where you want to add the new item.  
   Must be provided as a query parameter, e.g.:  
   ```
-  /edit/item?file_uuid=file_HuvSxlGCS0-hZlxMwOXwvg
+  /edit/item?file_uuid={file_uuid}
   ```
 
-### Request Body
+### Request Body (JSON)
 ```json
 {
   "path": ["string", ...],
   "type": "persona" | "audience" | "constraints" | "concept" | "worker"
 }
 ```
-| Field   | Type                    | Required | Description                                               |
-|---------|-------------------------|----------|-----------------------------------------------------------|
-| `path`  | string[] (array of keys)| **Yes**  | The path in JSON where the new item will be added.        |
-| `type`  | one of the listed enums | **Yes**  | Type of the new item (`persona`, `audience`, `constraints`, `concept`, or `worker`). |
+| Field   | Type                    | Required | Description                                                                      |
+|---------|-------------------------|----------|----------------------------------------------------------------------------------|
+| `path`  | string[] (array of keys) | **Yes**  | The path in JSON where the new item will be added.                               |
+| `type`  | one of the listed enums | **Yes**  | Type of the new item. Accepted values are `"persona"`, `"audience"`, `"constraints"`, `"concept"`, or `"worker"`. |
 
 ### Response
 ```json
@@ -52,19 +49,26 @@
 
 ---
 
-### **Add a Context**
+### Examples
 
-**Context** items typically go under a `context` key in your file content. For example:
+Below are some examples of how to use **Create Item** in different scenarios:
 
-**Request** (POST `/edit/item?file_uuid=file_HuvSxlGCS0-hZlxMwOXwvg`):
+#### Add a Context
+
+**Context** items typically go under a `context` key in your file content.
+
+**Request**  
+```plaintext
+POST /edit/item?file_uuid=file_HuvSxlGCS0-hZlxMwOXwvg
+```
 ```json
 {
-  "path": ["context", "context_wwRcMzJBRa2CeF2y9Y6TOA"],
+  "path": ["context"],
   "type": "persona"
 }
 ```
 
-**Response**:
+**Response**  
 ```json
 {
   "path": [
@@ -77,28 +81,30 @@
   }
 }
 ```
-This creates a new context entry with the specified path and type `persona`.
+This creates a new context entry with the path `["context","context_wwRcMzJBRa2CeF2y9Y6TOA"]` and type `"persona"`.
 
 ---
 
-### **Add Content to a Context**
+#### Add Content to a Context
 
-Inside a context object (e.g., `persona`), you may want to add a key-value pair describing some detail. For instance, adding a piece of persona content.
+Inside a context object (e.g., `persona`), you may want to add a key-value pair describing some detail.
 
-**Request** (POST `/edit/item?file_uuid=file_HuvSxlGCS0-hZlxMwOXwvg`):
+**Request**  
+```plaintext
+POST /edit/item?file_uuid=file_HuvSxlGCS0-hZlxMwOXwvg
+```
 ```json
 {
   "path": [
     "context",
     "context_wwRcMzJBRa2CeF2y9Y6TOA",
     "content",
-    "persona_vGY1JJv4T1OdQzjRmfOydQ"
   ],
   "type": "persona"
 }
 ```
 
-**Response**:
+**Response**  
 ```json
 {
   "path": [
@@ -113,23 +119,26 @@ Inside a context object (e.g., `persona`), you may want to add a key-value pair 
   }
 }
 ```
-Here, the system created a new sub-object (with a generated key like `"persona_vGY1JJv4T1OdQzjRmfOydQ"`) under `"content"`.
+A new sub-object is created under `"content"` with the generated key like `"persona_vGY1JJv4T1OdQzjRmfOydQ"`.
 
 ---
 
-### **Add a Worker**
+#### Add a Worker
 
-To add a **Worker** item, specify the `type` as `"worker"` and a suitable path, typically under `workers`.
+Specify the `type` as `"worker"` and a suitable path, typically under `workers`.
 
-**Request** (POST `/edit/item?file_uuid=file_HuvSxlGCS0-hZlxMwOXwvg`):
+**Request**  
+```plaintext
+POST /edit/item?file_uuid=file_HuvSxlGCS0-hZlxMwOXwvg
+```
 ```json
 {
-  "path": ["workers", "worker_Gvd_dQa3TPyJkitwzdOSCQ"],
+  "path": ["workers"],
   "type": "worker"
 }
 ```
 
-**Response**:
+**Response**  
 ```json
 {
   "path": [
@@ -151,19 +160,30 @@ To add a **Worker** item, specify the `type` as `"worker"` and a suitable path, 
   }
 }
 ```
+A new worker object is created under `workers` at the generated key `"worker_Gvd_dQa3TPyJkitwzdOSCQ"`.
 
 ---
 
-## Get Edit List (`/edit/at`)
+### Errors
 
+- `404 Not Found`: File (via `file_uuid`) not found.
+- `400 Bad Request`: Validation error (e.g., invalid path or type).
+- `401 Unauthorized`: Missing or invalid bearer token.
+- `500 Internal Server Error`: Other internal errors (e.g., database failure).
+
+---
+
+## Get Edit List
 - **Endpoint**: `GET /edit/at`
-- **Method**: `GET`
+- **Method**: `GET**
 - **Authentication**: **Bearer Token** (must include `Authorization: Bearer <access_token>`)
 - **Description**: Retrieves a list of **Data**, **Context**, or **Worker** items that can be edited within a specific project version.
 
 ### Query Parameters
-- **`project_uuid`** (string, required): The UUID of the project.
-- **`version_number`** (integer, required): The version number of the project.
+- **`project_uuid`** (string, required):  
+  The UUID of the project.
+- **`version_number`** (integer, required):  
+  The version number of the project.
 
 ### Response
 ```json
@@ -188,21 +208,23 @@ To add a **Worker** item, specify the `type` as `"worker"` and a suitable path, 
 }
 ```
 Where each item in `items` is an **EditAtItem** containing:
-- `display_name`: A user-friendly name to show in the UI.
-- `type`: The type of item (e.g., `"Data"`, `"Context"`, or `"Worker"`).
-- `reference`: A unique reference string that can be used to locate or further manipulate the item.
+- `display_name`: A user-friendly name for display.
+- `type`: The item type (e.g., `"Data"`, `"Context"`, or `"Worker"`).
+- `reference`: A unique reference string to further identify or manipulate the item.
 
-### Example Workflow
+### Example
 
-1. **Create a file** and **attach data entries** (type: `Data`).
-2. **Add a context** or **worker** to the file’s JSON content via the `/edit/item` endpoint.
-3. **Call** `/edit/at?project_uuid=xxx&version_number=yyy` to see a combined list of:
-   - Data entries from the file
-   - Context items
-   - Worker items
-4. Each item in the list will have its own `display_name`, `type`, and `reference`.
+Suppose you created:
+1. A file named `edit_test.json`
+2. Data entries: `"Test Data 1"`, `"Test Data 2"`
+3. A context item
+4. A worker
 
-**Sample** `GET /edit/at` response:
+When you call:
+```plaintext
+GET /edit/at?project_uuid=project_bXBOgtA0QeucarLjCE8QCg&version_number=1
+```
+You might see a response like:
 ```json
 {
   "items": [
@@ -230,8 +252,19 @@ Where each item in `items` is an **EditAtItem** containing:
 }
 ```
 
+### Errors
+
+- `403 Forbidden`: Attempting to view items in a private project without access.
+- `404 Not Found`: Project does not exist.
+- `401 Unauthorized`: Missing or invalid bearer token.
+- `400 Bad Request`: Other validation issues.
+- `500 Internal Server Error`: General or database-related error.
+
 ---
 
-This documentation outlines how to:
-- **Create** new items (`persona`, `audience`, `constraints`, `concept`, or `worker`) under file content via `/edit/item`.
-- **Fetch** the consolidated edit list of data/context/worker items in a project version via `/edit/at`.
+## Summary of Edit Endpoints
+
+| Method | Endpoint               | Description                                                         |
+|-------:|------------------------|---------------------------------------------------------------------|
+| **POST**   | `/edit/item`            | **Create Item** – add a `persona`, `audience`, `constraints`, `concept`, or `worker` to file content |
+| **GET**    | `/edit/at`              | **Get Edit List** – retrieve Data/Context/Worker items in a project version |
