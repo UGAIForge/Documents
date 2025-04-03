@@ -191,17 +191,17 @@ A new worker object is created under `workers` at the generated key `"worker_Gvd
   "items": [
     {
       "display_name": "Some Data",
-      "type": "Data",
+      "type": "data",
       "reference": "ref:data:data_JSvFhnihR625jFmlzs2lYA"
     },
     {
       "display_name": "edit_test.json.persona.",
-      "type": "Context",
+      "type": "context",
       "reference": "ref:context:path_file_HuvSxlGCS0-hZlxMwOXwvg_context_context_..."
     },
     {
       "display_name": "edit_test.json.",
-      "type": "Worker",
+      "type": "worker",
       "reference": "ref:worker:path_file_HuvSxlGCS0-hZlxMwOXwvg_workers_worker_..."
     }
   ]
@@ -230,22 +230,22 @@ You might see a response like:
   "items": [
     {
       "display_name": "Test Data 1",
-      "type": "Data",
+      "type": "data",
       "reference": "ref:data:data_JSvFhnihR625jFmlzs2lYA"
     },
     {
       "display_name": "Test Data 2",
-      "type": "Data",
+      "type": "data",
       "reference": "ref:data:data_kFODLQhkSSefaJ0zpIu0Gw"
     },
     {
       "display_name": "edit_test.json.persona.",
-      "type": "Context",
+      "type": "context",
       "reference": "ref:context:path_file_HuvSxlGCS0-hZlxMwOXwvg_context_context_wwRcMzJBRa2CeF2y9Y6TOA_content_persona_vGY1JJv4T1OdQzjRmfOydQ"
     },
     {
       "display_name": "edit_test.json.",
-      "type": "Worker",
+      "type": "worker",
       "reference": "ref:worker:path_file_HuvSxlGCS0-hZlxMwOXwvg_workers_worker_Gvd_dQa3TPyJkitwzdOSCQ"
     }
   ]
