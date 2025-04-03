@@ -25,7 +25,7 @@
   {
     "name": "my_document",
     "type": "file",
-    "parent_uuid": "abcdef1234567890abcdef1234567890" // optional
+    "parent_uuid": "abcdef1234567890abcdef1234567890" 
   }
   ```
   | Field         | Type         | Required | Description                                                                              |
@@ -71,7 +71,7 @@
   {
     "file_uuid": "abcdef1234567890abcdef1234567890",
     "content": {
-      "agentName": file.name,
+      "agentName": "agent name",
       "description": "",
       "context": {},
       "workers": {}
