@@ -71,7 +71,7 @@
   {
     "file_uuid": "abcdef1234567890abcdef1234567890",
     "content": {
-      "agentName": "agent name",
+      "agent_name": "agent name",
       "description": "",
       "context": {},
       "workers": {}

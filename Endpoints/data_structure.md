@@ -6,7 +6,7 @@
 
 ```json
 {
-  "agentName": "Agent name",
+  "agent_name": "Agent name",
   "description": "Agent description",
   "context": {
     "context_xxx": {
@@ -34,89 +34,107 @@
   },
   "workers": {
     "worker_xxx": {
-      "name": "worker name",
+      "label": "worker name",
       "description": "worker description",
       "entry": false,
-      "SPL":{
+      "settings": {
         "input": "this is input",
-        "output": "output to this value {{ref:}}",
-        "workFlows":[
+        "output": "output to this value {{ref:data:data_xxx}}",
+        "model": "gpt-4o",
+        "temperature": 0.7,
+        "max_output_tokens": 1000,
+        "context_window": 8000
+      },
+      "spl": {
+        "flows": [
           {
-            "type": "mainFlow",
+            "type": "main_flow",
+            "label": "Main Flow",
             "description": "main flow description",
-            "condition": {
-              "description": "condition description",
-              "value": "{{ref:}} == 222"
-            },
-            "flowContent": [
+            "flow_content": [
               {
                 "type": "command",
-                "content": "command content, {{ref:}}"
+                "command": "run command with {{ref:data:data_xxx}}"
               },
               {
-                "type": "ifElse",
-                "content": {
-                  "condition": {
-                    "description": "condition description",
-                    "value": "{{ref:}} == 222"
-                  },
-                  "trueFlow": [
-                    {
-                      "type": "command",
-                      "content": "command content, {{ref:}}"
-                    }
-                  ],
-                  "falseFlow": [
-                    {
-                      "type": "command",
-                      "content": "command content, {{path}}"
-                    }
-                  ]
-                }
+                "type": "if_else",
+                "condition": {
+                  "description": "Check value",
+                  "expression": "{{ref:data:value_1}} == 222"
+                },
+                "true_flow": [
+                  {
+                    "type": "command",
+                    "command": "true branch command"
+                  }
+                ],
+                "false_flow": [
+                  {
+                    "type": "command",
+                    "command": "false branch command"
+                  }
+                ]
               },
               {
                 "type": "loop",
-                "content": {
-                  "condition": {
-                    "description": "condition description",
-                    "value": "{{value 1}} == 222"
-                  },
-                  "trueFlow": [
-                    {
-                      "type": "command",
-                      "content": "command content, {{data_source_uuid}}"
-                    }
-                  ],
-                  "falseFlow": []
-                }
+                "condition": {
+                  "description": "Repeat if true",
+                  "expression": "{{ref:data:value_1}} == 222"
+                },
+                "true_flow": [
+                  {
+                    "type": "command",
+                    "command": "looped command"
+                  }
+                ]
               }
             ]
+          },
+          {
+            "type": "alternative_flow",
+            "label": "Alternative Flow",
+            "description": "alternative path description",
+            "condition": {
+              "description": "Trigger when X",
+              "expression": "{{ref:data:condition_data}} == true"
+            },
+            "flow_content": []
+          },
+          {
+            "type": "exception_flow",
+            "label": "Exception Flow",
+            "description": "handle error cases",
+            "condition": {
+              "description": "Trigger when error",
+              "expression": "{{ref:data:error_flag}} == true"
+            },
+            "flow_content": []
           }
         ]
       },
-      "useCases": [
+      "use_cases": [
         {
-          "name": "use case name",
-          "description": "use case description",
-          "code": "code"
+          "name": "use_case_1",
+          "description": "description for use case 1",
+          "code": "example code for this use case"
         }
       ],
       "code": {
-        "language": "language",
-        "code": "code",
-        "testCases": [
+        "language": "python",
+        "content": "full code implementation here",
+        "test_cases": [
           {
-            "name": "test case name",
-            "description": "test case description",
-            "code": "code"
+            "name": "test_case_1",
+            "description": "test description",
+            "code": "assert some_func() == expected"
           }
         ]
       },
       "diagrams": [
         {
-          "name": "diagram name",
-          "language": "language",
-          "diagram": "diagram"
+          "name": "architecture_diagram",
+          "language": "mermaid",
+          "diagram": "graph TD; A-->B;"
         }
       ]
     }
