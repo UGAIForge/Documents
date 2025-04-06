@@ -146,15 +146,24 @@ POST /edit/item?file_uuid=file_HuvSxlGCS0-hZlxMwOXwvg
     "worker_Gvd_dQa3TPyJkitwzdOSCQ"
   ],
   "value": {
-    "name": "",
+    "label": "",
     "description": "",
     "entry": false,
-    "SPL": {
+    "settings": {
+        "input": "",
+        "output": "",
+        "use_project_settings": True,
+        "model": "",
+        "temperature": 0,
+        "max_output_tokens": 0,
+        "context_window": 0
+    }
+    "spl": {
       "input": "",
       "output": "",
       "flows": []
     },
-    "useCases": {},
+    "use_cases": {},
     "code": {},
     "diagrams": {}
   }
