@@ -152,7 +152,7 @@ POST /edit/item?file_uuid=file_HuvSxlGCS0-hZlxMwOXwvg
     "settings": {
         "input": "",
         "output": "",
-        "use_project_settings": True,
+        "use_project_settings": true,
         "model": "",
         "temperature": 0,
         "max_output_tokens": 0,
