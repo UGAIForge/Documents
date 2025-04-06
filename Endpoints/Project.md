@@ -37,6 +37,27 @@
     "name": "Project Name",
     "user_uuid": "abcdef1234567890abcdef1234567890",
     "visibility": "private",
+    "settings": {
+      "model": {
+          "name": "gpt-4o",
+          "temperature": {
+              "min": 0,
+              "max": 1,
+              "default": 0.7
+          },
+          "max_output_tokens": {
+              "min": 1,
+              "max": 8192,
+              "default": 4096
+          },
+          "context_window": {
+              "min": 1,
+              "max": 200000,
+              "default": 100000
+          }
+      },
+      "rules": "You are a helpful assistant."
+    },
     "created_at": "2023-10-05T12:34:56.789Z",
     "updated_at": "2023-10-05T12:34:56.789Z",
     "versions": [
@@ -122,6 +143,7 @@
     "name": "Project Name",
     "user_uuid": "abcdef1234567890abcdef1234567890",
     "visibility": "private",
+    "settings": {},
     "created_at": "2023-10-05T12:34:56.789Z",
     "updated_at": "2023-10-05T12:34:56.789Z",
     "versions": [
@@ -167,13 +189,15 @@
   ```json
   {
     "name": "New Project Name",
-    "visibility": "public"
+    "visibility": "public",
+    "settings": {}
   }
   ```
   | Field         | Type          | Required | Description                                |
   |---------------|---------------|----------|--------------------------------------------|
   | `name`        | string        | Optional | New project name.                          |
-  | `visibility`  | "private"\|"public" | Optional | Change visibility of the project.           |
+  | `visibility`  | "private"\|"public" | Optional | Change visibility of the project.    |
+  | `settings`    | Dict          | Optional | Project settings                           |
 
 - **Response**: `200 OK`  
   Returns a **ProjectUpdateResponse** object:
@@ -182,6 +206,7 @@
     "uuid": "1234567890abcdef1234567890abcdef",
     "name": "New Project Name",
     "visibility": "public",
+    "settings": {},
     "updated_at": "2023-10-06T14:22:33.789Z"
   }
   ```
