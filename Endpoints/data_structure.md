@@ -42,9 +42,21 @@
         "output": "output to this value {{ref:data:data_xxx}}",
         "model":{
           "name": "gpt-4o",
-          "temperature": 0.7,
-          "max_output_tokens": 1000,
-          "context_window": 8000
+          "temperature": {
+              "min": 0,
+              "max": 1,
+              "default": 0.7
+          },
+          "max_output_tokens": {
+              "min": 1,
+              "max": 8192,
+              "default": 4096
+          },
+          "context_window": {
+              "min": 1,
+              "max": 200000,
+              "default": 100000
+          }
         }
       },
       "spl": {
