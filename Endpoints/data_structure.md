@@ -40,7 +40,7 @@
       "settings": {
         "input": "this is input",
         "output": "output to this value {{ref:data:data_xxx}}",
-        "model": "gpt-4o",
+        "name": "gpt-4o",
         "temperature": 0.7,
         "max_output_tokens": 1000,
         "context_window": 8000
