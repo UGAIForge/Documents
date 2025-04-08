@@ -42,7 +42,7 @@
           "required": "required input",
           "optional": "optional input"
         },
-        "output":{
+        "output": {
           "required": "output to this value {{ref:data:data_xxx}}",
           "optional": "optional output"
         },
