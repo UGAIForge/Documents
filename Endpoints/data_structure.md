@@ -38,8 +38,14 @@
       "description": "worker description",
       "entry": false,
       "settings": {
-        "input": "this is input",
-        "output": "output to this value {{ref:data:data_xxx}}",
+        "input": {
+          "required": "required input",
+          "optional": "optional input"
+        },
+        "output":{
+          "required": "output to this value {{ref:data:data_xxx}}",
+          "optional": "optional output"
+        },
         "model":{
           "name": "gpt-4o",
           "temperature": {
