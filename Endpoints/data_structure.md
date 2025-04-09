@@ -46,6 +46,7 @@
           "required": "output to this value {{ref:data:data_xxx}}",
           "optional": "optional output"
         },
+        "guardrails": "guardrail 1",
         "model":{
           "name": "gpt-4o",
           "temperature": {
