@@ -101,7 +101,7 @@
 
 ## Request Body (Batch Updates)
 
-You can now send multiple updates in a single request. Each update describes a path in the JSON (array of keys/indices) and the new value to set. If any update fails (due to invalid path, type mismatch, or out-of-bounds index), **none** of the updates are committed.
+You can send multiple updates in a single request. Each update describes a path in the JSON (array of keys/indices) and the new value to set. If any update fails (due to invalid path, type mismatch, or out-of-bounds index), **none** of the updates are committed.
 
 ### Schema
 
