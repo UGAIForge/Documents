@@ -95,7 +95,74 @@
 - **Endpoint**: `PATCH /projects/{project_uuid}/versions/{version_number}/files/{file_uuid}/content/partial`
 - **Method**: `PATCH`
 - **Authentication**: **Bearer Token** (must include `Authorization: Bearer <access_token>`)
-- **Description**: Partially updates the file’s JSON content by specifying a path (array of keys or indices) and a new value for that path.
+- **Description**: **Partially updates the file’s JSON content by specifying multiple path-value pairs**. All updates are applied atomically in a single request.
+
+---
+
+## Request Body (Batch Updates)
+
+You can now send multiple updates in a single request. Each update describes a path in the JSON (array of keys/indices) and the new value to set. If any update fails (due to invalid path, type mismatch, or out-of-bounds index), **none** of the updates are committed.
+
+### Schema
+
+```json
+{
+  "updates": [
+    {
+      "path": ["workers", 0, "SPL", "workFlows", 0, "flowContent", 0, "content"],
+      "value": "updated command"
+    },
+    {
+      "path": ["workers", 0, "SPL", "workFlows", 0, "flowContent", 1],
+      "value": {
+        "type": "command",
+        "content": "another command"
+      }
+    }
+  ]
+}
+```
+
+| Field     | Type                | Required | Description                                                                                 |
+|-----------|---------------------|----------|---------------------------------------------------------------------------------------------|
+| `updates` | array of objects    | **Yes**  | A list of individual path-value updates (each described below). All updates are applied atomically. |
+| `path`    | (string \| int)[]   | **Yes**  | The JSON path for a single update. Use keys for dicts and integer indices for lists.        |
+| `value`   | any (JSON data)     | **Yes**  | The new value to set at that path. If the final path item is a dict key, the key is created or overwritten. If it’s a list index, the element is overwritten or appended (if it equals current list length). |
+
+---
+
+## Response (Batch Updates)
+When the updates are successfully applied, the server returns a `200 OK` status and a JSON object describing the final changes:
+
+```json
+{
+  "updates": [
+    {
+      "path": ["workers", 0, "SPL", "workFlows", 0, "flowContent", 0, "content"],
+      "value": "updated command"
+    },
+    {
+      "path": ["workers", 0, "SPL", "workFlows", 0, "flowContent", 1],
+      "value": {
+        "type": "command",
+        "content": "another command"
+      }
+    }
+  ],
+  "updated_at": "2025-03-21T15:32:56.789Z"
+}
+```
+
+- `updates`: The same array of updates that were applied successfully.
+- `updated_at`: A timestamp indicating when the file content was last modified.
+
+---
+
+## Examples
+
+All the single-update examples below **still apply**, but they can be adapted into a single item in the `updates` array. You may also combine multiple additions, modifications, or deletions in one request.
+
+---
 
 ### Example: Update a Field in a Nested Object
 Suppose the original file content is:
@@ -121,15 +188,19 @@ Suppose the original file content is:
 }
 ```
 
-Then you PATCH with the request body:
+To change `"original command"` to `"updated command"`, send:
 ```json
 {
-  "path": ["workers", 0, "SPL", "workFlows", 0, "flowContent", 0, "content"],
-  "value": "updated command"
+  "updates": [
+    {
+      "path": ["workers", 0, "SPL", "workFlows", 0, "flowContent", 0, "content"],
+      "value": "updated command"
+    }
+  ]
 }
 ```
 
-The updated file content becomes:
+**Updated file content**:
 ```json
 {
   "workers": [
@@ -152,11 +223,15 @@ The updated file content becomes:
 }
 ```
 
-The response is:
+**Response**:
 ```json
 {
-  "path": ["workers", 0, "SPL", "workFlows", 0, "flowContent", 0, "content"],
-  "value": "updated command",
+  "updates": [
+    {
+      "path": ["workers", 0, "SPL", "workFlows", 0, "flowContent", 0, "content"],
+      "value": "updated command"
+    }
+  ],
   "updated_at": "2025-03-21T15:32:56.789Z"
 }
 ```
@@ -165,7 +240,7 @@ The response is:
 
 ### How to Add an Item to a List
 
-To **append a new item to an existing list**, provide a path where the last element is equal to the current list's length.
+**To append** a new item to an existing list, provide a path where the last element is equal to the current list length.
 
 #### Example: Append a new `command` to `flowContent`
 
@@ -194,15 +269,19 @@ Original content:
 Request body:
 ```json
 {
-  "path": ["workers", 0, "SPL", "workFlows", 0, "flowContent", 1],
-  "value": {
-    "type": "command",
-    "content": "command B"
-  }
+  "updates": [
+    {
+      "path": ["workers", 0, "SPL", "workFlows", 0, "flowContent", 1],
+      "value": {
+        "type": "command",
+        "content": "command B"
+      }
+    }
+  ]
 }
 ```
 
-Updated content:
+**Updated content**:
 ```json
 {
   "workers": [
@@ -228,29 +307,33 @@ Updated content:
 }
 ```
 
-Response:
+**Response**:
 ```json
 {
-  "path": ["workers", 0, "SPL", "workFlows", 0, "flowContent", 1],
-  "value": {
-    "type": "command",
-    "content": "command B"
-  },
+  "updates": [
+    {
+      "path": ["workers", 0, "SPL", "workFlows", 0, "flowContent", 1],
+      "value": {
+        "type": "command",
+        "content": "command B"
+      }
+    }
+  ],
   "updated_at": "2025-03-21T15:35:22.123Z"
 }
 ```
 
-> ⚠️ **Important**: When adding to a list, **you must provide the exact next index** — for example, use `2` if the list already has two items. The system does not support automatic appending without the correct index.
+> ⚠️ **Important**: When adding to a list, you must provide the exact next index. The system does not support automatic append without the correct index.
 
 ---
 
 ### How to Add an Item to a Dictionary
 
-To **add a new key-value pair** to an existing dictionary (object), specify the path to the dictionary and the new key as the final element. If the key does not yet exist, it will be created.
+To **add a new key-value pair** to an existing dictionary, specify the path to that dictionary and the new key as the final element.
 
 #### Example: Add a new config key to `settings`
 
-Suppose the original file content is:
+Original content:
 ```json
 {
   "workers": [
@@ -268,12 +351,16 @@ Suppose the original file content is:
 Request body:
 ```json
 {
-  "path": ["workers", 0, "SPL", "settings", "replicas"],
-  "value": 2
+  "updates": [
+    {
+      "path": ["workers", 0, "SPL", "settings", "replicas"],
+      "value": 2
+    }
+  ]
 }
 ```
 
-Updated content:
+**Updated content**:
 ```json
 {
   "workers": [
@@ -289,24 +376,30 @@ Updated content:
 }
 ```
 
-Response:
+**Response**:
 ```json
 {
-  "path": ["workers", 0, "SPL", "settings", "replicas"],
-  "value": 2,
+  "updates": [
+    {
+      "path": ["workers", 0, "SPL", "settings", "replicas"],
+      "value": 2
+    }
+  ],
   "updated_at": "2025-03-21T16:00:10.456Z"
 }
 ```
 
-> ⚠️ **Important**: If the final key already exists, the value will be overwritten. If the key does not exist, it is created.
+> ⚠️ **Important**: If the final key already exists, its value is overwritten. If it doesn’t exist, it is created.
+
+---
 
 ### How to Remove an Item in a List
 
-Currently, there is **no direct "remove index" operation**. Instead, you **overwrite** the parent array with a new array that excludes the item you want removed.
+No direct “remove index” operation exists. Instead, **overwrite** the parent array with a new array excluding the item you want removed.
 
 #### Example: Remove the second `command` from `flowContent`
 
-Suppose the original file content is:
+Original content:
 ```json
 {
   "workers": [
@@ -332,24 +425,24 @@ Suppose the original file content is:
 }
 ```
 
-You want to remove the item at index `1` (which has `"content": "command B"`). First, **fetch** the list from your application side, remove the undesired item, and then **send the updated list** as the new `value`.
-
 Request body:
 ```json
 {
-  "path": ["workers", 0, "SPL", "workFlows", 0, "flowContent"],
-  "value": [
+  "updates": [
     {
-      "type": "command",
-      "content": "command A"
+      "path": ["workers", 0, "SPL", "workFlows", 0, "flowContent"],
+      "value": [
+        {
+          "type": "command",
+          "content": "command A"
+        }
+      ]
     }
   ]
 }
 ```
-- Here, `path` points to the **array** itself (not an individual element).
-- `value` is the **entire array** after removing `"command B"`.
 
-The updated content becomes:
+**Updated content**:
 ```json
 {
   "workers": [
@@ -371,31 +464,35 @@ The updated content becomes:
 }
 ```
 
-Response:
+**Response**:
 ```json
 {
-  "path": ["workers", 0, "SPL", "workFlows", 0, "flowContent"],
-  "value": [
+  "updates": [
     {
-      "type": "command",
-      "content": "command A"
+      "path": ["workers", 0, "SPL", "workFlows", 0, "flowContent"],
+      "value": [
+        {
+          "type": "command",
+          "content": "command A"
+        }
+      ]
     }
   ],
   "updated_at": "2025-03-21T16:15:42.789Z"
 }
 ```
 
-> ⚠️ **Important**: The final element in `path` must be the array you’re replacing, and `value` must be the complete updated array. Any item not present in `value` is effectively removed.
+> ⚠️ **Important**: The final element in `path` must be the array you’re replacing, and `value` must be the complete updated array. Anything not present in `value` is removed.
 
 ---
 
 ### How to Remove a Key from a Dictionary
 
-Similarly, to remove a key from a dictionary, **overwrite** the parent dictionary with a new dictionary that omits the unwanted key.
+Similarly, to remove a key from a dictionary, **overwrite** the parent dictionary without that key.
 
 #### Example: Remove `"replicas"` from `settings`
 
-Suppose the original file content is:
+Original content:
 ```json
 {
   "workers": [
@@ -411,21 +508,21 @@ Suppose the original file content is:
 }
 ```
 
-To remove `"replicas"`, you fetch the existing `settings` object, delete `"replicas"`, and then overwrite the `settings` key with the updated object.
-
 Request body:
 ```json
 {
-  "path": ["workers", 0, "SPL", "settings"],
-  "value": {
-    "env": "development"
-  }
+  "updates": [
+    {
+      "path": ["workers", 0, "SPL", "settings"],
+      "value": {
+        "env": "development"
+      }
+    }
+  ]
 }
 ```
-- Here, `path` points to the **dictionary** object you are replacing.
-- `value` is the **entire dictionary** minus the `"replicas"` key.
 
-Updated content:
+**Updated content**:
 ```json
 {
   "workers": [
@@ -440,52 +537,30 @@ Updated content:
 }
 ```
 
-Response:
+**Response**:
 ```json
 {
-  "path": ["workers", 0, "SPL", "settings"],
-  "value": {
-    "env": "development"
-  },
+  "updates": [
+    {
+      "path": ["workers", 0, "SPL", "settings"],
+      "value": {
+        "env": "development"
+      }
+    }
+  ],
   "updated_at": "2025-03-21T16:17:09.123Z"
 }
 ```
 
-> ⚠️ **Important**: The final element in `path` is the **dictionary** you’re overwriting, and `value` must contain the remaining keys. Any omitted key is removed.
 ---
 
-- **URL Params**:
-  - `project_uuid` (string): The UUID of the project.
-  - `version_number` (integer): The version number of the project.
-  - `file_uuid` (string): The UUID of the file to update.
+### Errors
+- `401 Unauthorized`: Missing or invalid bearer token.
+- `404 Not Found`: Project, version, user, or file not found.
+- `400 Bad Request`: Could not update the content (e.g., an invalid path, list index out of bounds, or type mismatch).
+- `500 Internal Server Error`: Database or other internal error.
 
-- **Request Body** (JSON):
-  ```json
-  {
-    "path": ["workers", 0, "SPL", "workFlows", 0, "flowContent", 0, "content"],
-    "value": "updated command"
-  }
-  ```
-  | Field     | Type              | Required | Description                                                                 |
-  |-----------|-------------------|----------|-----------------------------------------------------------------------------|
-  | `path`    | (string \| int)[] | Required | A list of keys (for dicts) and/or indices (for lists) defining the JSON path to update. |
-  | `value`   | any (JSON data)   | Required | The new value to set at the specified path.                                 |
-
-- **Response**: `200 OK`  
-  Returns a **FileContentPartialResponse** object:
-  ```json
-  {
-    "path": ["workers", 0, "SPL", "workFlows", 0, "flowContent", 0, "content"],
-    "value": "updated command",
-    "updated_at": "2025-03-21T15:32:56.789Z"
-  }
-  ```
-
-- **Errors**:
-  - `401 Unauthorized`: Missing or invalid bearer token.
-  - `404 Not Found`: Project, version, user, or file not found.
-  - `400 Bad Request`: Could not update the content (e.g., the path is invalid, list index is out of bounds, or type mismatch).
-  - `500 Internal Server Error`: Database or other internal error.
+When multiple updates are provided, a failure in **any** update causes the entire operation to fail (i.e., no partial commits). If an error occurs, you’ll receive an HTTP error response detailing the issue, and the content remains unchanged.
 
 ---
 
