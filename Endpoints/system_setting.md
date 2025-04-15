@@ -97,10 +97,12 @@
 
 ### Request Fields
 
-| Field   | Type   | Required | Validation Notes                                                                                              |
-|---------|--------|----------|----------------------------------------------------------------------------------------------------------------|
-| `model` | object | **Yes**  | Must include both `provider_name` and `updated_provider`. The `updated_provider` must contain a unique `name`, a `default_model` that exists in its `models`, and at least one model entry. |
-| `rules` | string | No       | If supplied, must be a non-empty string (whitespace-only strings are rejected).                               |
+| Field                  | Type            | Required | Description                                                                                        |
+|------------------------|-----------------|----------|----------------------------------------------------------------------------------------------------|
+| `model`               | object          | **Yes**  | Contains `provider_name` and `updated_provider` with the new provider config to verify.            |
+| └─ `provider_name`     | string          | **Yes**  | The name of the provider (e.g., `"openai"`, `"anthropic"`). Must match the provider you want to update/verify. |
+| └─ `updated_provider`  | ProviderConfig  | **Yes**  | A valid `ProviderConfig` object describing the updated provider settings (API key, models, etc.).  |
+| `rules`               | string          | No       | A string containing any system-level rules. It cannot be an empty string if provided.              |
 
 ### Response Body (JSON)
 Same schema as **Get System Settings**, reflecting the updated values.
@@ -137,6 +139,91 @@ Validation rules enforced server‑side:
   - All fields are editable.
 
 ---
+
+### Verify Provider Settings
+- **Endpoint**: `POST /system/verify`
+- **Method**: `POST`
+- **Authentication**: **Bearer Token** (must include `Authorization: Bearer <access_token>`)
+- **Description**: Verifies the API key. If verification fails (e.g., invalid API key or unsupported provider), the request will return an error.
+
+
+#### Request Body (JSON)
+
+Expects the same structure as **SystemSettingUpdate**, with an updated provider configuration:
+
+```json
+{
+  "model": {
+    "provider_name": "openai", 
+    "updated_provider": {
+      "name": "openai",
+      "type": "some-provider-type",
+      "api_key": "sk-xxxxxx",
+      "base_url": "https://api.openai.com/v1",
+      "default_model": "gpt-4o",
+      "models": [
+        {
+          "name": "gpt-4o",
+          "active": true
+        }
+      ]
+    }
+  },
+  "rules": "Optional rules"
+}
+```
+
+| Field                  | Type            | Required | Description                                                                                        |
+|------------------------|-----------------|----------|----------------------------------------------------------------------------------------------------|
+| `model`               | object          | **Yes**  | Contains `provider_name` and `updated_provider` with the new provider config to verify.            |
+| └─ `provider_name`     | string          | **Yes**  | The name of the provider (e.g., `"openai"`, `"anthropic"`). Must match the provider you want to update/verify. |
+| └─ `updated_provider`  | ProviderConfig  | **Yes**  | A valid `ProviderConfig` object describing the updated provider settings (API key, models, etc.).  |
+| `rules`               | string          | No       | A string containing any system-level rules. It cannot be an empty string if provided.              |
+
+**Example**:
+```json
+{
+  "model": {
+    "provider_name": "openai",
+    "updated_provider": {
+      "name": "openai",
+      "type": "text-generation",
+      "api_key": "sk-xxxxxx",
+      "base_url": "https://api.openai.com/v1",
+      "default_model": "gpt-4o",
+      "models": [
+        {
+          "name": "gpt-4o",
+          "active": true
+        }
+      ]
+    }
+  },
+  "rules": "Some optional rules"
+}
+```
+
+#### Response
+If the provider settings are successfully updated and verified, the endpoint returns:
+
+```json
+{
+  "status": "success",
+  "message": "API key verified successfully"
+}
+```
+
+#### Errors
+- `422 Unprocessable Entity`:
+  - Invalid provider configuration, e.g., empty `name` or missing `models`.
+  - Missing `model` block in the request.
+  - `rules` provided but is an empty string.
+  - Unsupported `provider_name`.
+- `404 Not Found`:  
+  - The user’s system settings do not exist (though normally a default is created automatically).
+- `401 Unauthorized`: Missing or invalid bearer token.
+- `400 Bad Request`: Other internal errors, e.g., failure to create or test the provider service instance.
+- `500 Internal Server Error`: Unexpected database or server error.
 
 ## Summary of System‑Settings Endpoints
 
