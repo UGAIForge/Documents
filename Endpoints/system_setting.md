@@ -140,14 +140,14 @@ Validation rules enforced server‑side:
 
 ---
 
-### Verify Provider Settings
+## Verify Provider Settings
 - **Endpoint**: `POST /system/verify`
 - **Method**: `POST`
 - **Authentication**: **Bearer Token** (must include `Authorization: Bearer <access_token>`)
 - **Description**: Verifies the API key. If verification fails (e.g., invalid API key or unsupported provider), the request will return an error.
 
 
-#### Request Body (JSON)
+### Request Body (JSON)
 
 Expects the same structure as **SystemSettingUpdate**, with an updated provider configuration:
 
@@ -203,7 +203,7 @@ Expects the same structure as **SystemSettingUpdate**, with an updated provider 
 }
 ```
 
-#### Response
+### Response
 If the provider settings are successfully updated and verified, the endpoint returns:
 
 ```json
@@ -213,7 +213,7 @@ If the provider settings are successfully updated and verified, the endpoint ret
 }
 ```
 
-#### Errors
+### Errors
 - `422 Unprocessable Entity`:
   - Invalid provider configuration, e.g., empty `name` or missing `models`.
   - Missing `model` block in the request.
