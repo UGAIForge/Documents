@@ -225,6 +225,76 @@ If the provider settings are successfully updated and verified, the endpoint ret
 - `400 Bad Request`: Other internal errors, e.g., failure to create or test the provider service instance.
 - `500 Internal Server Error`: Unexpected database or server error.
 
+---
+
+## Restore Default System Settings
+- **Endpoint**: `POST /system/restore`
+- **Method**: `POST`
+- **Authentication**: **Bearer Token** (must include `Authorization: Bearer <access_token>`)
+- **Description**: Restores the **System Settings** for the current user to the default values. If no settings exist yet, a new default configuration is created.
+
+### Response
+Returns a **SystemSettingResponse** object containing the updated (or newly created) default settings:
+
+```json
+{
+  "user_uuid": "user_abcdef1234567890abcdef1234",
+  "model": {
+    "providers": [
+      {
+        "name": "openai",
+        "api_key": "",
+        "base_url": "https://api.openai.com/v1",
+        "default_model": "gpt-4o",
+        "models": [
+          {
+            "name": "gpt-4o",
+            "active": true
+          },
+          {
+            "name": "o1",
+            "active": true
+          },
+          {
+            "name": "o3-mini",
+            "active": true
+          }
+        ]
+      },
+      {
+        "name": "anthropic",
+        "api_key": "",
+        "base_url": "https://api.anthropic.com",
+        "default_model": "claude-3-5-sonnet-20241022",
+        "models": [
+          {
+            "name": "claude-3-7-sonnet-20250219",
+            "active": true
+          },
+          {
+            "name": "claude-3-5-sonnet-20241022",
+            "active": true
+          },
+          {
+            "name": "claude-3-5-haiku-20240307",
+            "active": true
+          }
+        ]
+      }
+    ]
+  },
+  "rules": null,
+  "created_at": "2025-04-07T12:00:00.000Z",
+  "updated_at": "2025-04-07T12:30:00.000Z"
+}
+```
+
+### Errors
+- `404 Not Found`: No system settings exist and could not be created.  
+- `401 Unauthorized`: Missing or invalid bearer token.
+- `400 Bad Request`: General or validation error in restoring settings.
+- `500 Internal Server Error`: Database or other internal error.
+
 ## Summary of System‑Settings Endpoints
 
 | Method | Endpoint | Description                                |
