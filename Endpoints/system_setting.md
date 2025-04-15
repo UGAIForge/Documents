@@ -115,19 +115,24 @@ Same schema as **Get System Settings**, reflecting the updated values.
 
 `model.providers` is an **array** where each entry follows:
 
-| Key            | Type                | Required | Notes                                                             |
-|----------------|---------------------|----------|-------------------------------------------------------------------|
-| `name`         | string              | **Yes**  | Unique provider identifier (e.g., `"openai"`).                    |
-| `api_key`      | string&#124;null    | No       | Stored encrypted server‑side; empty string allowed.               |
-| `base_url`     | string&#124;null    | No       | Must start with `http://` or `https://` if provided.              |
-| `default_model`| string              | **Yes**  | Must match one of the `models[].name` values.                     |
-| `models`       | array&lt;object&gt; | **Yes**  | Each object has `name` (string) and `active` (boolean).           |
+| Key             | Type                | Required | Notes                                                                                   |
+|-----------------|---------------------|----------|-----------------------------------------------------------------------------------------|
+| `name`          | string              | **Yes**  | Unique provider identifier (e.g., `"openai"`).                                          |
+| `type`          | string              | **Yes**  | Must be either `"system"` or `"user"`.                                                  |
+| `api_key`       | string&#124;null    | No       | Stored encrypted server‑side; empty string allowed.                                     |
+| `base_url`      | string&#124;null    | No       | Must start with `http://` or `https://` if provided.                                    |
+| `default_model` | string              | **Yes**  | Must match one of the `models[].name` values.                                           |
+| `models`        | array&lt;object&gt; | **Yes**  | Each object must include `name` (string) and `active` (boolean).                        |
 
 Validation rules enforced server‑side:
 - Provider names must be unique.
 - Each provider must list at least one model.
 - `default_model` must exist in its `models` array.
 - Empty or whitespace‑only strings are rejected where values are required.
+- For providers with `type: "system"`:
+  - `name` and `base_url` **cannot be changed**.
+- For providers with `type: "user"`:
+  - All fields are editable.
 
 ---
 
