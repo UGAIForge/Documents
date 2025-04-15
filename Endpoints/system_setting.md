@@ -25,6 +25,7 @@
     "providers": [
       {
         "name": "openai",
+        "type": "system",
         "api_key": "",
         "base_url": "https://api.openai.com/v1",
         "default_model": "gpt-4o",
@@ -36,6 +37,7 @@
       },
       {
         "name": "anthropic",
+        "type": "system",
         "api_key": "",
         "base_url": "https://api.anthropic.com",
         "default_model": "claude-3-5-sonnet-20241022",
