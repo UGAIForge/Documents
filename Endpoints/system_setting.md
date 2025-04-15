@@ -5,7 +5,9 @@
 ## Table of Contents
 1. [Get System Settings](#get-system-settings)
 2. [Update System Settings](#update-system-settings)
-3. [Summary of System‑Settings Endpoints](#summary-of-system-settings-endpoints)
+3. [Verify Provider Settings](#verify_provider_settings)
+4. [Restore Default System Settings](#restore_default_system_settings)
+5. [Summary of System‑Settings Endpoints](#summary-of-system-settings-endpoints)
 
 ---
 
