@@ -295,9 +295,13 @@ Returns a **SystemSettingResponse** object containing the updated (or newly crea
 - `400 Bad Request`: General or validation error in restoring settings.
 - `500 Internal Server Error`: Database or other internal error.
 
+---
+
 ## Summary of System‑Settings Endpoints
 
 | Method | Endpoint | Description                                |
 |-------:|----------|--------------------------------------------|
 | **GET**    | `/system` | **Get System Settings** – retrieve (or auto‑create) the current user’s settings |
 | **PATCH**  | `/system` | **Update System Settings** – modify provider/model config or global rules |
+| **POST**   | `/system/verify`    | **Verify Provider Settings** – updates settings with new provider info, then attempts to verify configuration |
+| **POST**   | `/system/restore`   | **Restore Default System Settings** – reverts to default values or creates defaults if none exist             |
