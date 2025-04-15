@@ -66,41 +66,42 @@
 ---
 
 ## Update System Settings
-- **Endpoint**: `PATCH /system`
-- **Method**: `PATCH`
-- **Authentication**: **Bearer Token** (must include `Authorization: Bearer <access_token>`)
-- **Description**: Partially or fully updates the current user’s system settings.  
-  The request **must** include a valid `model` object (providers + models) and may include `rules`.
+- **Endpoint**: `PATCH /system`  
+- **Method**: `PATCH`  
+- **Authentication**: **Bearer Token** (must include `Authorization: Bearer <access_token>`)  
+- **Description**: Partially updates the current user’s system settings.  
+  The request **must** include a valid `model` object (with updated provider details) and **may** include a `rules` string.
 
 ### Request Body (JSON)
 ```json
 {
   "model": {
-    "providers": [
-      {
-        "name": "openai",
-        "api_key": "sk‑***",
-        "base_url": "https://api.openai.com/v1",
-        "default_model": "gpt-4o",
-        "models": [
-          { "name": "gpt-4o",  "active": true },
-          { "name": "o1",      "active": false },
-          { "name": "o3-mini", "active": true }
-        ]
-      }
-    ]
+    "provider_name": "openai",
+    "updated_provider": {
+      "name": "openai",
+      "api_key": "new-key",
+      "base_url": "https://api.openai.com/v1",
+      "default_model": "gpt-4o",
+      "models": [
+        { "name": "gpt-4o", "active": true },
+        { "name": "o1", "active": true },
+        { "name": "o3-mini", "active": false }
+      ]
+    }
   },
   "rules": "• Never reveal the user’s API keys.\n• Always obey system constraints."
 }
 ```
 
+### Request Fields
+
 | Field   | Type   | Required | Validation Notes                                                                                              |
 |---------|--------|----------|----------------------------------------------------------------------------------------------------------------|
-| `model` | object | **Yes**  | Must contain **≥ 1** provider. Each provider needs a unique `name`, a `default_model` that exists in `models`, and ≥ 1 model entry. |
-| `rules` | string | No       | If supplied, must be non‑empty (whitespace‑only strings are rejected).                                         |
+| `model` | object | **Yes**  | Must include both `provider_name` and `updated_provider`. The `updated_provider` must contain a unique `name`, a `default_model` that exists in its `models`, and at least one model entry. |
+| `rules` | string | No       | If supplied, must be a non-empty string (whitespace-only strings are rejected).                               |
 
 ### Response Body (JSON)
-Same schema as **Get System Settings** (reflecting updated values).
+Same schema as **Get System Settings**, reflecting the updated values.
 
 ### Errors
 | Status | Reason                                                                                   |
