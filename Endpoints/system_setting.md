@@ -104,14 +104,11 @@
 Same schema as **Get System Settings**, reflecting the updated values.
 
 ### Errors
-| Status | Reason                                                                                   |
-|-------:|------------------------------------------------------------------------------------------|
-| `422 Unprocessable Entity` | Validation error (e.g., empty provider name, duplicate provider names, `default_model` not in list, empty `rules`). |
-| `404 Not Found`           | Settings record somehow missing for the user.                         |
-| `401 Unauthorized`        | Missing / invalid bearer token.                                       |
-| `400 Bad Request`         | Other internal error.                                                |
-| `500 Internal Server Error` | Database or unexpected failure.                                     |
-
+- `422 Unprocessable Entity` – Validation error (e.g., empty provider name, duplicate provider names, `default_model` not in list, empty `rules`).  
+- `404 Not Found` – Settings record not found for the user.  
+- `401 Unauthorized` – Missing / invalid bearer token.  
+- `400 Bad Request` – Other internal errors (rare).  
+- `500 Internal Server Error` – Database or unexpected failure.
 ---
 
 ### Model JSON Structure
