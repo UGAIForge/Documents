@@ -83,6 +83,7 @@
     "provider_name": "openai",
     "updated_provider": {
       "name": "openai",
+      "type": "system",
       "api_key": "new-key",
       "base_url": "https://api.openai.com/v1",
       "default_model": "gpt-4o",
