@@ -33,7 +33,7 @@
 | Field   | Type                    | Required | Description                                                                      |
 |---------|-------------------------|----------|----------------------------------------------------------------------------------|
 | `path`  | string[] (array of keys) | **Yes**  | The path in JSON where the new item will be added.                               |
-| `type`  | one of the listed enums | **Yes**  | Type of the new item. Accepted values are `"persona"`, `"audience"`, `"constraints"`, `"concept"`, or `"worker"`. |
+| `type`  | one of the listed enums | **Yes**  | Type of the new item. Accepted values are `"persona"`, `"audience"`, `"constrain"`, `"concept"`, or `"worker"`. |
 
 ### Response
 ```json
