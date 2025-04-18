@@ -27,7 +27,7 @@
 ```json
 {
   "path": ["string", "..."],
-  "type": "persona | audience | constraints | concept | worker"
+  "type": "persona | audience | constraint | concept | worker"
 }
 ```
 | Field   | Type                    | Required | Description                                                                      |
