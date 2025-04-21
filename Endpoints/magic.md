@@ -60,11 +60,15 @@ Each frame is a JSON envelope:
 }
 ```
 
-| `type` | `data` shape & front‑end handling |
-|--------|-----------------------------------|
-| `llm_response` | Plain **string** — display as assistant text. |
-| `tool_result` | ```json<br>{ "tool": "create_item", "result": {...} }``` or ```json<br>{ "tool": "update_file_content_partial", "result": {...} }```<br>Handle as follows:<br>• `create_item` → update the file per the **Create Item** spec (<https://github.com/UGAIForge/Documents/blob/main/Endpoints/edit.md#create-item>).<br>• `update_file_content_partial` → apply each `updates` entry per **Update File Content (Partial)** (<https://github.com/UGAIForge/Documents/blob/main/Endpoints/file.md#update-file-content-partial>). |
-| `error` | **String** — show to user; stop progress indicators. |
+| `type`         | `data` shape & front‑end handling                                                                                                                                                                                                                              |
+|----------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `llm_response` | *String* – plain assistant text. Display it in the chat / console UI.                                                                                                                                                                                            |
+| `tool_result`  | JSON object, e.g. `{ "tool": "create_item", "result": … }` or `{ "tool": "update_file_content_partial", "result": … }`.  If `tool` = `create_item`, update the agent file exactly as in the **Create Item** spec.  If `tool` = `update_file_content_partial`, apply each update per the **Update File Content (Partial)** rules. |
+| `error`        | *String* – error message. Show to the user and stop any progress indicators. |
+
+*Reference specs*  
+- **Create Item:** <https://github.com/UGAIForge/Documents/blob/main/Endpoints/edit.md#create-item>  
+- **Update File Content (Partial):** <https://github.com/UGAIForge/Documents/blob/main/Endpoints/file.md#update-file-content-partial>
 
 ---
 
