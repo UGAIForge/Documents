@@ -1,23 +1,20 @@
-## Magic WebSocket Endpoint
+# Magic WebSocket Endpoint Documentation
 
 ---
 
-### Table of Contents
-1. [Connect to `/magic/ws`](#connect-to-magicws)
-2. [Client → Server Message Format](#client--server-message-format)
-3. [Server → Client Events](#server--client-events)
-4. [Errors & Close Codes](#errors--close-codes)
+## Table of Contents
+1. [Magic WebSocket (`/magic/ws`)](#magic-websocket-endpoint)
 
 ---
 
-## Connect to `/magic/ws`
+## Connect to `/magic/ws`
 
-| Attribute        | Value / Notes                                                                                                     |
-|------------------|-------------------------------------------------------------------------------------------------------------------|
-| **URL**          | `ws://<host>/magic/ws?type={operation}&token={access_token}`                                                      |
-| **Authentication** | **Query Parameter** → `token` — a valid **access‑token** (same one used for Bearer‑auth REST calls).            |
-| **Required Query** | `type` &nbsp;— one of:<br/>  • `nl_to_spl` – natural‑language → SPL assistant<br/>  • `gen_alt_exc` – *reserved* (TBD)<br/>  • `data` – *reserved* (TBD) |
-| **Description**  | Opens a persistent WebSocket channel. After validation, the server streams incremental updates back to the client while it executes tool‑driven LLM actions. |
+| Field / Attribute | Value / Notes                                                                                                        |
+|-------------------|----------------------------------------------------------------------------------------------------------------------|
+| **Endpoint**      | `GET ws://<host>/magic/ws`                                                                                           |
+| **Authentication**| **Query Parameter** → `token=<access_token>` — same JWT/Bearer token used for REST endpoints.                         |
+| **Required Query**| `type`  — one of `nl_to_spl` \| `gen_alt_exc` \| `data`                                                              |
+| **Description**   | Opens a persistent WebSocket channel. After validating the token, the server streams incremental updates while LLM‑driven “magic” tools manipulate your agent file. |
 
 **Connection example**
 
@@ -27,9 +24,9 @@ ws://localhost:5000/magic/ws?type=nl_to_spl&token=eyJhbGciOiJIUzI1NiIsInR5cCI6Ik
 
 ---
 
-## Client → Server Message Format
+## Client → Server Message
 
-Once connected, send a **single JSON object** describing the target file and version to process.
+Immediately after `accept`, send a single JSON object describing the target project/file.
 
 ```json
 {
@@ -39,19 +36,19 @@ Once connected, send a **single JSON object** describing the target file and ver
 }
 ```
 
-| Field            | Type            | Required | Description                                           |
-|------------------|-----------------|----------|-------------------------------------------------------|
-| `project_uuid`   | string (UUID)   | **Yes**  | Project that owns the file.                           |
-| `version_number` | integer         | **Yes**  | Version of the project to operate on.                 |
-| `file_uuid`      | string (UUID)   | **Yes**  | The agent / SPL JSON file that will be modified.      |
+| Field            | Type    | Required | Description                                      |
+|------------------|---------|----------|--------------------------------------------------|
+| `project_uuid`   | string  | **Yes**  | Project owning the file.                         |
+| `version_number` | integer | **Yes**  | Project version to operate on.                   |
+| `file_uuid`      | string  | **Yes**  | UUID of the agent / SPL JSON file to be updated. |
 
-*For future operation types (`gen_alt_exc`, `data`) additional or different parameters may be required.*
+*(Additional fields may be needed for future `type` values.)*
 
 ---
 
 ## Server → Client Events
 
-The server streams **text frames** containing a JSON envelope:
+Every frame sent by the server is a JSON envelope:
 
 ```json
 {
@@ -60,44 +57,47 @@ The server streams **text frames** containing a JSON envelope:
 }
 ```
 
-| `type`        | Description & Front‑end Handling                                                                                                                           |
-|---------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `llm_response`| `data` is a **string** (plain text from the LLM). Display it in the chat/console as assistant output.                                                                                            |
-| `tool_result` | `data` describes the outcome of a tool call executed by the model. See handling rules below.                                                                                                      |
-| `error`       | `data` is an error message string. Surface to the user and stop any spinner/progress indicators.                                                                                                  |
+| `type` value      | How the front‑end should react                                                                                                                    |
+|-------------------|---------------------------------------------------------------------------------------------------------------------------------------------------|
+| `llm_response`    | `data` is a **string** from the LLM. Display it in the assistant chat/log UI.                                                                     |
+| `tool_result`     | `data.tool` indicates which tool ran:<br/>  • `create_item` – update the agent JSON exactly as in the **[Create Item]** spec.<br/>  • `update_file_content_partial` – apply each `updates` entry per **[Update File Content (Partial)]** rules. |
+| `error`           | `data` is a string describing the error. Show to the user and stop any progress indicators.                                                       |
 
-### Tool Result Handling
+#### `tool_result` payload shape
 
 ```json
 {
   "type": "tool_result",
   "data": {
     "tool": "create_item" | "update_file_content_partial",
-    "result": { ... }
+    "result": { ... }   // schema depends on tool
   }
 }
 ```
 
-| `tool` value                        | What to do                                                                                                                                                                                                                                    |
-|------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `create_item`                      | The `result` object matches the body returned by **Create Item** (`path`, `value`). Apply the modification to the in‑memory agent file exactly as described in the [Create Item](https://github.com/UGAIForge/Documents/blob/main/Endpoints/edit.md#create-item) spec. |
-| `update_file_content_partial`      | The `result` object contains an `updates` array (list of path/value pairs). Apply each update to the agent file as documented in [Update File Content (Partial)](https://github.com/UGAIForge/Documents/blob/main/Endpoints/file.md#update-file-content-partial). |
+*Reference specs*  
+- **Create Item:** <https://github.com/UGAIForge/Documents/blob/main/Endpoints/edit.md#create-item>  
+- **Update File Content (Partial):** <https://github.com/UGAIForge/Documents/blob/main/Endpoints/file.md#update-file-content-partial>
 
 ---
 
 ## Errors & Close Codes
 
-| Condition                                   | Action / Close code |
-|---------------------------------------------|---------------------|
-| Invalid or missing `token`                  | Connection is closed immediately with **1008 (POLICY_VIOLATION)**. |
-| Unsupported `type` parameter                | Sends an `"error"` event, then closes with normal code 1000.        |
-| Any server‑side unhandled exception         | Sends an `"error"` event (if possible) then closes with **1011 (INTERNAL_ERROR)**. |
-| Client disconnects                          | The server logs the event and stops processing.                      |
+| Situation                               | Behaviour / Close Code |
+|-----------------------------------------|-------------------------|
+| Missing / invalid `token`               | Connection closed with **1008 (POLICY_VIOLATION)**. |
+| `type` query not in allowed list        | Server sends `{ "type": "error", "data": "Invalid type…" }` then closes (1000). |
+| Unhandled internal exception            | Server sends `"error"` event (if possible) then closes with **1011 (INTERNAL_ERROR)**. |
+| Client initiates close                  | Server logs and ends processing gracefully. |
 
 ---
 
-Once the connection is open and the initial payload is sent, the front end should:
+## Summary of WebSocket Interaction
 
-1. Render incoming `llm_response` text as assistant messages.
-2. Parse `tool_result` messages and **mutate the agent JSON in memory** according to the referenced specifications (`create_item`, `update_file_content_partial`).
-3. Handle `error` messages gracefully by alerting the user and halting any ongoing progress UI.
+| Step | Actor  | Payload / Event                                     | Purpose                                             |
+|-----:|--------|------------------------------------------------------|-----------------------------------------------------|
+| 1    | Client | **Connect** `ws://.../magic/ws?type=…&token=…`       | Opens channel; server validates token and type.     |
+| 2    | Client | `{ project_uuid, version_number, file_uuid }`        | Specifies which file/version to operate on.         |
+| 3    | Server | `llm_response` events                                | Streams natural‑language reasoning from the model.  |
+| 4    | Server | `tool_result` events                                 | Instructs front‑end to mutate agent JSON accordingly.|
+| 5    | Server | `error` events (optional)                            | Communicates problems; may close connection.        |
