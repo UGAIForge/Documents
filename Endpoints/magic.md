@@ -66,10 +66,6 @@ Each frame is a JSON envelope:
 | `tool_result`  | JSON object, e.g. `{ "tool": "create_item", "result": … }` or `{ "tool": "update_file_content_partial", "result": … }`.  If `tool` = `create_item`, update the agent file exactly as in the [Create Item](https://github.com/UGAIForge/Documents/blob/main/Endpoints/edit.md#create-item).  If `tool` = `update_file_content_partial`, apply each update per the [Update File Content (Partial)](https://github.com/UGAIForge/Documents/blob/main/Endpoints/file.md#update-file-content-partial). |
 | `error`        | *String* – error message. Show to the user and stop any progress indicators. |
 
-*Reference specs*  
-- **Create Item:** <https://github.com/UGAIForge/Documents/blob/main/Endpoints/edit.md#create-item>  
-- **Update File Content (Partial):** <https://github.com/UGAIForge/Documents/blob/main/Endpoints/file.md#update-file-content-partial>
-
 ---
 
 ### Errors
