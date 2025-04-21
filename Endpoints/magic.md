@@ -25,7 +25,7 @@
 **Connection example**
 
 ```text
-ws://localhost:5000/magic/ws?type=nl_to_spl&token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+wss://ugaiforge.ai/magic/ws?type=nl_to_spl&token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 ```
 
 ---
@@ -68,21 +68,22 @@ Each frame is a JSON envelope:
 
 ---
 
-### Errors & Close Codes
-| Scenario                                   | Behaviour / Code |
-|--------------------------------------------|------------------|
-| Missing / invalid `token`                  | Close **1008 (POLICY_VIOLATION)** |
-| Unsupported `type` value                   | Sends an `"error"` frame, then closes **1000** |
-| Internal server exception                  | Sends `"error"` frame (if possible) then closes **1011 (INTERNAL_ERROR)** |
-| Client closes socket                       | Server stops processing gracefully |
+### Errors
 
+- `1008 Policy Violation`: Missing or invalid `token` query parameter.  
+- `1000 Normal Closure`: Connection closed after the server sends an `"error"` frame because the `type` query value is not one of `nl_to_spl | gen_alt_exc | data`.  
+- `1011 Internal Error`: Unhandled server exception while processing the WebSocket.  
+- `400 Bad Request` (frame payload in `"error"`): General validation failure inside a `tool_result` (e.g., bad path, out‑of‑bounds index, malformed JSON).  
+- `403 Forbidden` (frame payload in `"error"`): The file does not belong to the specified project or the user lacks permission.  
+- `404 Not Found` (frame payload in `"error"`): Project, version, or file cannot be located.  
+- `500 Internal Server Error` (frame payload in `"error"`): Database or other internal failure encountered by the server.
 ---
 
 ### Summary of WebSocket Interaction
 
 | Step | Actor  | Payload / Event                                      | Purpose                                          |
 |----: |--------|------------------------------------------------------|--------------------------------------------------|
-| 1    | Client | **Connect** `ws://.../magic/ws?type=…&token=…`        | Opens socket; server validates parameters.       |
+| 1    | Client | **Connect** `wss://.../magic/ws?type=…&token=…`        | Opens socket; server validates parameters.       |
 | 2    | Client | `{ project_uuid, version_number, file_uuid }`         | Declares which file/version to operate on.       |
 | 3    | Server | `llm_response` frames                                 | Streams natural‑language reasoning.              |
 | 4    | Server | `tool_result` frames                                  | Instructs front‑end to mutate agent JSON.        |
