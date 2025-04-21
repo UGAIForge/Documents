@@ -55,8 +55,8 @@ Each frame is a JSON envelope:
 
 ```json
 {
-  "type": "llm_response" | "tool_result" | "error",
-  "data": ...
+  "type": "llm_response | tool_result | error",
+  "data": "..."
 }
 ```
 
