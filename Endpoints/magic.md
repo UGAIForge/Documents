@@ -1,4 +1,4 @@
-# Magic WebSocket Endpoint Documentation
+# Magic WebSocket API Documentation
 
 ---
 
@@ -7,13 +7,20 @@
 
 ---
 
-## Connect to `/magic/ws`
+## Magic WebSocket Endpoint
+*(Endpoint path `/magic/ws` — upgrades to WebSocket)*  
+
+> The sections below (“Connect to `/magic/ws`”, “Client → Server Message”, etc.) describe how to use this endpoint in detail.
+
+---
+
+### Connect to `/magic/ws`
 
 | Field / Attribute | Value / Notes                                                                                                        |
 |-------------------|----------------------------------------------------------------------------------------------------------------------|
-| **Endpoint**      | `GET ws://<host>/magic/ws`                                                                                           |
-| **Authentication**| **Query Parameter** → `token=<access_token>` — same JWT/Bearer token used for REST endpoints.                         |
-| **Required Query**| `type`  — one of `nl_to_spl` \| `gen_alt_exc` \| `data`                                                              |
+| **Endpoint**      | `GET ws://<host>/magic/ws`  → WebSocket upgrade                                                                      |
+| **Authentication**| **Query Parameter** → `token=<access_token>` — same JWT/Bearer token used for REST endpoints.                         |
+| **Required Query**| `type`  — `nl_to_spl` \| `gen_alt_exc` \| `data`                                                                     |
 | **Description**   | Opens a persistent WebSocket channel. After validating the token, the server streams incremental updates while LLM‑driven “magic” tools manipulate your agent file. |
 
 **Connection example**
@@ -24,7 +31,7 @@ ws://localhost:5000/magic/ws?type=nl_to_spl&token=eyJhbGciOiJIUzI1NiIsInR5cCI6Ik
 
 ---
 
-## Client → Server Message
+### Client → Server Message
 
 Immediately after `accept`, send a single JSON object describing the target project/file.
 
@@ -46,7 +53,7 @@ Immediately after `accept`, send a single JSON object describing the target proj
 
 ---
 
-## Server → Client Events
+### Server → Client Events
 
 Every frame sent by the server is a JSON envelope:
 
@@ -81,7 +88,7 @@ Every frame sent by the server is a JSON envelope:
 
 ---
 
-## Errors & Close Codes
+### Errors & Close Codes
 
 | Situation                               | Behaviour / Close Code |
 |-----------------------------------------|-------------------------|
@@ -92,7 +99,7 @@ Every frame sent by the server is a JSON envelope:
 
 ---
 
-## Summary of WebSocket Interaction
+### Summary of WebSocket Interaction
 
 | Step | Actor  | Payload / Event                                     | Purpose                                             |
 |-----:|--------|------------------------------------------------------|-----------------------------------------------------|
