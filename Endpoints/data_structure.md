@@ -78,21 +78,26 @@
                 "command": "run command with {{ref:data:data_xxx}}"
               },
               {
-                "type": "if_else",
-                "condition": {
-                  "description": "Check value",
-                  "expression": "{{ref:data:value_1}} == 222"
-                },
-                "true_flow": [
+                "type": "if_else",                
+                "description": "Check value",                                  
+                "if_flow": [
                   {
                     "type": "command",
-                    "command": "true branch command"
+                    "command": "if branch command",
+                    "expression": "{{ref:data:value_1}} == 222"
                   }
                 ],
-                "false_flow": [
+                "else_if_flow": [
                   {
                     "type": "command",
-                    "command": "false branch command"
+                    "command": "else if branch command",
+                    "expression": "{{ref:data:value_1}} == 222",
+                  }
+                ],
+                "else_flow": [
+                  {
+                    "type": "command",
+                    "command": "else branch command"
                   }
                 ]
               },
